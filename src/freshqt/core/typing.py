@@ -8,8 +8,10 @@
 
 """
 
-from freshqt.widgets.slider import Slider
-from freshqt.widgets.code import Code
+from pathlib import Path
+
+from PyQt6.QtGui import QColor
 
 
-__all__ = ("Slider", "Code")
+PathLike = str | Path
+ColorLike = str | tuple[int, int, int] | QColor

@@ -1,10 +1,22 @@
+"""
+
+    freshqt  -  A modern, refreshed take on PyQt user interfaces
+
+    This file is a part of the freshqt
+    project and distributed under MIT license.
+    https://github.com/kadir014/freshqt
+
+"""
+
 from enum import Enum, auto
 
-from PyQt6.QtCore import Qt, QRegularExpression
+from PyQt6.QtCore import Qt, QRegularExpression, QRect
 from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPlainTextEdit, QLabel
 from PyQt6.QtGui import QColor, QSyntaxHighlighter, QPainter, QBrush, QPen, QTextDocument, QTextCharFormat
 
-from src.freshqt.core.palettes import SyntaxPalette, DRACULA_SYNTAX
+from freshqt.core.models import SyntaxPalette
+from freshqt.core.theme import Theme, Themeable
+from freshqt.palettes.dracula import SYNTAX_DRACULA
 
 
 class HighlighterLanguage(Enum):
@@ -16,7 +28,7 @@ class Highlighter(QSyntaxHighlighter):
     def __init__(self,
             parent: QTextDocument | None = None,
             language: HighlighterLanguage = HighlighterLanguage.PYTHON,
-            syntax_palette: SyntaxPalette = DRACULA_SYNTAX
+            syntax_palette: SyntaxPalette = SYNTAX_DRACULA
             ) -> None:
         super().__init__(parent)
 
@@ -158,7 +170,7 @@ class Highlighter(QSyntaxHighlighter):
         return self.currentBlockState() == in_state
 
 
-class Code(QWidget):
+class Code(QWidget, Themeable):
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
 
@@ -166,7 +178,10 @@ class Code(QWidget):
         lyt.setContentsMargins(0, 0, 0, 0)
         self.setLayout(lyt)
 
-        lyt.addSpacing(37)
+        # TODO: Make these properties
+        self.line_col_width = 37
+        self.line_no_alignment = Qt.AlignmentFlag.AlignRight
+        lyt.addSpacing(self.line_col_width)
 
         self.editor_lyt = QVBoxLayout()
         self.editor_lyt.setSpacing(0)
@@ -196,43 +211,57 @@ class Code(QWidget):
 
         self.statusbar.hide()
 
-        self.editor.cursorPositionChanged.connect(self.editor_cursor_position_changed)
+        self.editor.cursorPositionChanged.connect(self._editor_cursor_position_changed)
 
-        self.setStyleSheet("""
-            QPlainTextEdit {
+        self.__theme: Theme = None
+
+    def update_theme(self, theme: Theme) -> None:
+        self.__theme = theme
+
+        border_color = theme.qss(theme.palette.text_tertiary)
+
+        self.statusbar.setStyleSheet("background-color: transparent;")
+
+        self.setStyleSheet(f"""
+            QPlainTextEdit {{
                 font-family: "Cascadia Code";
                 font-size: 14px;
-                color: #f8f8f2;
-                background-color: #282a36;
-                border-top: 1px solid #797d99;
-                border-right: 1px solid #797d99;
+                color: {theme.qss(theme.palette.text_primary)};
+                background-color: {theme.qss(theme.palette.background_primary)};
+                border-top: 1px solid {border_color};
+                border-right: 1px solid {border_color};
                 border-top-right-radius: 7px;
-                border-bottom: 1px solid #797d99;
+                border-bottom: 1px solid {border_color};
                 border-bottom-right-radius: 7px;
-            }
+            }}
 
-            QLabel {
+            QLabel {{
                 font-family: "Cascadia Code";
                 font-size: 14px;
-                color: #797d99;
-            }
+                color: {border_color};
+            }}
         """)
 
-    def editor_cursor_position_changed(self) -> None:
+    def _editor_cursor_position_changed(self) -> None:
         pos_str = f"{self.editor.textCursor().blockNumber()}:{self.editor.textCursor().positionInBlock()}"
         self.cursor_lbl.setText(pos_str)
 
     def paintEvent(self, e) -> None:
+        if self.__theme is None:
+            # TODO: warning
+            return
+
         pt = QPainter(self)
         pt.setRenderHint(QPainter.RenderHint.Antialiasing, on=True)
 
-        outline_pen = QPen(QColor("#797d99"))
-        outline_pen.setWidthF(1.0)
+        outline_pen = QPen(self.__theme.qcolor(self.__theme.palette.text_tertiary))
+        # TODO: need testing, 1.5 works as close as to native Qt rendering
+        outline_pen.setWidthF(1.5)
 
         slider_value = self.editor.verticalScrollBar().value()
 
         pt.setPen(outline_pen)
-        pt.setBrush(QBrush(QColor("#44475a")))
+        pt.setBrush(QBrush(self.__theme.qcolor(self.__theme.palette.background_secondary)))
         pt.drawRoundedRect(0, 0, self.width(), self.height(), 7, 7)
 
         pt.setBrush(QBrush())
@@ -242,6 +271,14 @@ class Code(QWidget):
         pt.setPen(outline_pen)
 
         gap = font.pixelSize() + 3
-        for i in range(self.height() // gap):
+        for i in range(self.height() // gap + 2):
             line_no = i + slider_value
-            pt.drawText(14, i * gap, str(line_no))
+            digits = len(str(line_no)) - 1
+            y = i * gap + 6
+
+            col_margin = 5
+            pt.drawText(
+                QRect(0, y, self.line_col_width - col_margin, 50),
+                self.line_no_alignment,
+                str(line_no)
+            )

@@ -1,3 +1,10 @@
+# Project stuff
+uv.lock
+src/freshqt/widgets/template.py
+_typography.py
+_example.py
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

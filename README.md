@@ -1,10 +1,23 @@
-# pyqt-fresh-kit
-A UI toolkit with a fresh visual style and custom widgets for PyQt6.
+# freshqt
+A modern, refreshed take on PyQt user interfaces.
 
-**Design Philosophy**: A universally themable; flexible library of custom, consistent and animated UI components that is still unified with the usual Qt workflow.
+**Design Philosophy**: A universally themable, flexible design system of custom, consistent, and animated UI components; while remaining loyal to standard Qt workflow.
 - **Universally Themable**: Every component, icon and typography shares a common dynamic theme and style.
 - **Custom Widgets**: Lots of new and stylized widgets that focuses on overall visual language consistency.
 - **Animations**: Built-in interactive animations for components.
+
+
+
+# Installation
+Clone repository.
+```sh
+$ git clone https://github.com/kadir014/freshqt.git
+$ cd freshqt
+```
+Let `uv` handle the rest and run the example gallery script.
+```sh
+$ uv run freshqt_gallery
+```
 
 
 

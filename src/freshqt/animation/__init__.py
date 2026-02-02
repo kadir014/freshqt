@@ -8,8 +8,11 @@
 
 """
 
-from freshqt.widgets.slider import Slider
-from freshqt.widgets.code import Code
+from freshqt.animation.easings import Easing
+from freshqt.animation.tween import Tween
 
 
-__all__ = ("Slider", "Code")
+__all__ = (
+    "Easing",
+    "Tween"
+)
