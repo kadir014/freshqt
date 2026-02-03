@@ -27,6 +27,9 @@ class Theme:
         self.__widgets: list["QWidget | Themeable"] = []
         self.__palette: UIPalette
         self.__name = ""
+
+        self.__font_family = "Arial"
+        self.__font_scale = 1.0
     
     @property
     def name(self) -> str:
@@ -37,6 +40,24 @@ class Theme:
     def palette(self) -> UIPalette:
         """ Loaded & processed UI palette. """
         return self.__palette
+    
+    @property
+    def font_family(self) -> str:
+        return self.__font_family
+    
+    @font_family.setter
+    def font_family(self, value: str) -> None:
+        self.__font_family = value
+        self.update_widgets()
+
+    @property
+    def font_scale(self) -> float:
+        return self.__font_scale
+    
+    @font_scale.setter
+    def font_scale(self, value: float) -> None:
+        self.__font_scale = value
+        self.update_widgets()
 
     def update(self, palette: UIPalette) -> None:
         """

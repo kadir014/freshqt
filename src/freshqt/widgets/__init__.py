@@ -10,6 +10,7 @@
 
 from freshqt.widgets.slider import Slider
 from freshqt.widgets.code import Code
+from freshqt.widgets.kbdlabel import KbdLabel
 
 
 __all__ = ("Slider", "Code")

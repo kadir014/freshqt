@@ -25,10 +25,19 @@ class Slider(QSlider, Themeable):
 
         self.setCursor(Qt.CursorShape.PointingHandCursor)
 
+        self.__groove_height = 6
+
+    @property
+    def groove_height(self) -> int:
+        return self.__groove_height
+    
+    @groove_height.setter
+    def groove_height(self, value: int) -> None:
+        self.__groove_height = value
+
     def update_theme(self, theme: Theme) -> None:
-        handle_height = 15
-        groove_height = 6
-        self.setFixedHeight(handle_height + 1)
+        handle_height = self.height() - 1
+        groove_height = self.groove_height
         margin = -ceil((handle_height - groove_height) / 2.0)
         groove_radius = floor(groove_height * 0.5)
         handle_radius = floor(handle_height * 0.5)

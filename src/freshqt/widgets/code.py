@@ -213,7 +213,7 @@ class Code(QWidget, Themeable):
 
         self.editor.cursorPositionChanged.connect(self._editor_cursor_position_changed)
 
-        self.__theme: Theme = None
+        self.__theme: Theme | None = None
 
     def update_theme(self, theme: Theme) -> None:
         self.__theme = theme
