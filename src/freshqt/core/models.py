@@ -76,3 +76,32 @@ class UIPalette:
     state_success: ColorLike
     state_warning: ColorLike
     state_error: ColorLike
+
+
+@dataclass
+class TypographyRamp:
+    """
+    Typography type sizes in pixels.
+    """
+
+    caption: int
+    body: int
+    subtitle: int
+    title3: int
+    title2: int
+    title1: int
+    large_title: int
+
+
+class TypographyType(Enum):
+    """
+    Typography types.
+    """
+
+    CAPTION = auto()
+    BODY = auto()
+    SUBTITLE = auto()
+    TITLE3 = auto()
+    TITLE2 = auto()
+    TITLE1 = auto()
+    LARGE_TITLE = auto()

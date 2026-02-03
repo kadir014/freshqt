@@ -8,10 +8,12 @@
 
 """
 
-from PyQt6.QtWidgets import QWidget, QLabel
-from PyQt6.QtGui import QPainter, QPainterPath, QColor
+from PyQt6.QtWidgets import QWidget
+from PyQt6.QtGui import QPainter, QPainterPath
 
 from freshqt.core.theme import Theme, Themeable
+from freshqt.core.models import TypographyType
+from freshqt.widgets.typolabel import TypoLabel
 
 
 SPECIAL_CHARS = {
@@ -34,13 +36,14 @@ SPECIAL_CHARS = {
 }
 
 
-class KbdLabel(QLabel, Themeable):
+class KbdLabel(TypoLabel):
     def __init__(self,
             text: str | None = None,
             convert_special: bool = True,
+            type: TypographyType = TypographyType.BODY,
             parent: QWidget | None = None
             ) -> None:
-        super().__init__(text=None, parent=parent)
+        super().__init__(text=None, type=type, parent=parent)
 
         self.setText(text, convert_special)
 
@@ -51,15 +54,7 @@ class KbdLabel(QLabel, Themeable):
     def update_theme(self, theme: Theme) -> None:
         self.__theme = theme
 
-        font_size = int(round(14 * theme.font_scale))
-        if font_size <= 0:
-            font_size = 1
-
-        self.setStyleSheet(f"""
-            font-family: {theme.font_family};
-            font-size: {font_size}px;
-            color: {theme.qss(theme.palette.text_primary)};
-        """)
+        super().update_theme(theme)
 
     def setText(self, text: str | None, convert_special: bool = True) -> None:
         """

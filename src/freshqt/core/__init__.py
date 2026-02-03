@@ -9,7 +9,13 @@
 """
 
 from freshqt.core.theme import Theme, Themeable, change_titlebar_theme
-from freshqt.core.models import TweenRepeatMode, SyntaxPalette, UIPalette
+from freshqt.core.models import (
+    TweenRepeatMode,
+    SyntaxPalette,
+    UIPalette,
+    TypographyRamp,
+    TypographyType
+)
 
 __version__ = "0.0.1"
 
@@ -17,5 +23,5 @@ __version__ = "0.0.1"
 __all__ = (
     "__version__",
     "Theme", "Themeable", "change_titlebar_theme",
-    "TweenRepeatMode", "SyntaxPalette", "UIPalette"
+    "TweenRepeatMode", "SyntaxPalette", "UIPalette", "TypographyRamp", "TypographyType"
 )

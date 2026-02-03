@@ -14,8 +14,9 @@ from pathlib import Path
 from PyQt6.QtWidgets import QWidget
 from PyQt6.QtGui import QColor
 
-from freshqt.core.typing import PathLike, ColorLike
-from freshqt.core.models import UIPalette
+from freshqt.core.typing import ColorLike
+from freshqt.core.models import UIPalette, TypographyRamp, TypographyType
+from freshqt.palettes.dracula import UI_DRACULA
 
 
 class Theme:
@@ -26,10 +27,23 @@ class Theme:
     def __init__(self) -> None:
         self.__widgets: list["QWidget | Themeable"] = []
         self.__palette: UIPalette
+        self.__typo_ramp: TypographyRamp
         self.__name = ""
+
+        self.update_palette(UI_DRACULA)
 
         self.__font_family = "Arial"
         self.__font_scale = 1.0
+
+        self.update_typo_ramp(TypographyRamp(
+            10,
+            14,
+            19,
+            24,
+            28,
+            32,
+            40
+        ))
     
     @property
     def name(self) -> str:
@@ -40,6 +54,11 @@ class Theme:
     def palette(self) -> UIPalette:
         """ Loaded & processed UI palette. """
         return self.__palette
+    
+    @property
+    def typo_ramp(self) -> TypographyRamp:
+        """ Loaded typography ramp. """
+        return self.__typo_ramp
     
     @property
     def font_family(self) -> str:
@@ -59,9 +78,9 @@ class Theme:
         self.__font_scale = value
         self.update_widgets()
 
-    def update(self, palette: UIPalette) -> None:
+    def update_palette(self, palette: UIPalette) -> None:
         """
-        Update theme data.
+        Update theme palette data.
         
         Parameters
         ----------
@@ -78,6 +97,19 @@ class Theme:
             else:
                 setattr(self.__palette, field, QColor(c))
 
+        self.update_widgets()
+
+    def update_typo_ramp(self, typo_ramp: TypographyRamp) -> None:
+        """
+        Update theme typography ramp.
+
+        Parameters
+        ----------
+        typo_ramp
+            Typography ramp
+        """
+
+        self.__typo_ramp = typo_ramp
         self.update_widgets()
 
     def update_widgets(self) -> None:
@@ -136,6 +168,9 @@ class Theme:
 
         if update:
             self.update_widgets()
+
+    def get_typo_size(self, type: TypographyType) -> None:
+        return getattr(self.__typo_ramp, type.name.lower())
 
     @staticmethod
     def qss(color: ColorLike) -> str:

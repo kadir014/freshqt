@@ -10,6 +10,7 @@
 
 from freshqt.widgets.slider import Slider
 from freshqt.widgets.code import Code
+from freshqt.widgets.typolabel import TypoLabel
 from freshqt.widgets.kbdlabel import KbdLabel
 
 

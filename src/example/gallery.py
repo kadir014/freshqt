@@ -14,7 +14,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout
 from PyQt6.QtGui import QFont
 
-from freshqt.widgets import Slider, Code, KbdLabel
+from freshqt.widgets import Slider, Code, TypoLabel, KbdLabel
 from freshqt.core import Theme, Themeable, change_titlebar_theme
 from freshqt.palettes.dracula import UI_DRACULA
 from freshqt.palettes.alucard import UI_ALUCARD
@@ -43,6 +43,10 @@ class MainWindow(QWidget, Themeable):
         self.slider.setMaximum(200)
         self.slider.setValue(100)
         self.slider.valueChanged.connect(self.slider_change)
+
+        lb0 = TypoLabel("Hello")
+        theme.add_widget(lb0)
+        lyt.addWidget(lb0)
 
         kbdlyt = QHBoxLayout()
         kbdlyt.setAlignment(Qt.AlignmentFlag.AlignLeft)
@@ -93,8 +97,7 @@ def main() -> None:
         font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
         app.setFont(font)
 
-    theme.font_family = "Arial"
-    theme.update(UI_DRACULA)
+    theme.update_palette(UI_DRACULA)
 
     main_window = MainWindow()
     theme.add_widget(main_window)
