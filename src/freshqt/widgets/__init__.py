@@ -13,6 +13,7 @@ from freshqt.widgets.code import Code
 from freshqt.widgets.typolabel import TypoLabel
 from freshqt.widgets.kbdlabel import KbdLabel
 from freshqt.widgets.badgelabel import BadgeLabel
+from freshqt.widgets.checkbox import CheckBox
 
 
 __all__ = (

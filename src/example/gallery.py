@@ -14,7 +14,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout
 from PyQt6.QtGui import QFont
 
-from freshqt.widgets import Slider, Code, TypoLabel, KbdLabel, BadgeLabel
+from freshqt.widgets import Slider, Code, TypoLabel, KbdLabel, BadgeLabel, CheckBox
 from freshqt.core import Theme, Themeable, change_titlebar_theme
 
 from freshqt.palettes.dracula import UI_DRACULA
@@ -74,6 +74,10 @@ class MainWindow(QWidget, Themeable):
         bdglbl = BadgeLabel("Failed", color=theme.palette.state_error)
         theme.add_widget(bdglbl)
         kbdlyt.addWidget(bdglbl)
+
+        self.checkbox = CheckBox("Accept terms")
+        theme.add_widget(self.checkbox)
+        lyt.addWidget(self.checkbox)
 
         self.code = Code()
         theme.add_widget(self.code)
