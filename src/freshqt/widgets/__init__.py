@@ -12,6 +12,13 @@ from freshqt.widgets.slider import Slider
 from freshqt.widgets.code import Code
 from freshqt.widgets.typolabel import TypoLabel
 from freshqt.widgets.kbdlabel import KbdLabel
+from freshqt.widgets.badgelabel import BadgeLabel
 
 
-__all__ = ("Slider", "Code")
+__all__ = (
+    "Slider",
+    "Code",
+    "TypoLabel",
+    "KbdLabel",
+    "BadgeLabel"
+)

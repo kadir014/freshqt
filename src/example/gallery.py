@@ -14,10 +14,12 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout
 from PyQt6.QtGui import QFont
 
-from freshqt.widgets import Slider, Code, TypoLabel, KbdLabel
+from freshqt.widgets import Slider, Code, TypoLabel, KbdLabel, BadgeLabel
 from freshqt.core import Theme, Themeable, change_titlebar_theme
+
 from freshqt.palettes.dracula import UI_DRACULA
 from freshqt.palettes.alucard import UI_ALUCARD
+from freshqt.palettes.catpuccin import UI_CATPUCCIN_FRAPPE
 
 
 # Global theme manager
@@ -56,6 +58,22 @@ class MainWindow(QWidget, Themeable):
             kbdlbl = KbdLabel(key)
             theme.add_widget(kbdlbl)
             kbdlyt.addWidget(kbdlbl)
+
+        bdglbl = BadgeLabel("Badge", color=theme.palette.brand_primary)
+        theme.add_widget(bdglbl)
+        kbdlyt.addWidget(bdglbl)
+
+        bdglbl = BadgeLabel("Success", color=theme.palette.state_success)
+        theme.add_widget(bdglbl)
+        kbdlyt.addWidget(bdglbl)
+
+        bdglbl = BadgeLabel("Warning", color=theme.palette.state_warning)
+        theme.add_widget(bdglbl)
+        kbdlyt.addWidget(bdglbl)
+
+        bdglbl = BadgeLabel("Failed", color=theme.palette.state_error)
+        theme.add_widget(bdglbl)
+        kbdlyt.addWidget(bdglbl)
 
         self.code = Code()
         theme.add_widget(self.code)
@@ -97,7 +115,7 @@ def main() -> None:
         font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
         app.setFont(font)
 
-    theme.update_palette(UI_DRACULA)
+    #theme.update_palette(UI_CATPUCCIN_FRAPPE)
 
     main_window = MainWindow()
     theme.add_widget(main_window)

@@ -11,9 +11,9 @@
 from PyQt6.QtWidgets import QWidget
 from PyQt6.QtGui import QPainter, QPainterPath
 
-from freshqt.core.theme import Theme, Themeable
+from freshqt.core.theme import Theme
 from freshqt.core.models import TypographyType
-from freshqt.widgets.typolabel import TypoLabel
+from freshqt.widgets.badgelabel import BadgeLabel
 
 
 SPECIAL_CHARS = {
@@ -36,7 +36,7 @@ SPECIAL_CHARS = {
 }
 
 
-class KbdLabel(TypoLabel):
+class KbdLabel(BadgeLabel):
     def __init__(self,
             text: str | None = None,
             convert_special: bool = True,
@@ -47,12 +47,10 @@ class KbdLabel(TypoLabel):
 
         self.setText(text, convert_special)
 
-        self.setMargin(2)
-
-        self.__theme: Theme | None = None
+        self.border_radius = 3.5
 
     def update_theme(self, theme: Theme) -> None:
-        self.__theme = theme
+        self.color = theme.qcolor(theme.palette.background_tertiary)
 
         super().update_theme(theme)
 
@@ -77,20 +75,3 @@ class KbdLabel(TypoLabel):
                 text = text.replace(key.capitalize(), char)
 
         super().setText(text)
-
-    def paintEvent(self, a0) -> None:
-        if self.__theme is None: return
-
-        pt = QPainter(self)
-        pt.setRenderHint(QPainter.RenderHint.Antialiasing, on=True)
-
-        size = self.sizeHint()
-
-        clippath = QPainterPath()
-        clippath.addRoundedRect(0, 0, size.width(), size.height(), 6, 6)
-        pt.setClipPath(clippath)
-
-        bg_color = self.__theme.qcolor(self.__theme.palette.background_tertiary)
-        pt.fillRect(0, 0, size.width(), size.height(), bg_color)
-
-        super().paintEvent(a0)
