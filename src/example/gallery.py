@@ -14,7 +14,15 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout
 from PyQt6.QtGui import QFont
 
-from freshqt.widgets import Slider, Code, TypoLabel, KbdLabel, BadgeLabel, CheckBox
+from freshqt.widgets import (
+    Slider,
+    Code,
+    TypoLabel,
+    KbdLabel,
+    BadgeLabel,
+    CheckBox,
+    Switch
+)
 from freshqt.core import Theme, Themeable, change_titlebar_theme
 
 from freshqt.palettes.dracula import UI_DRACULA
@@ -78,6 +86,14 @@ class MainWindow(QWidget, Themeable):
         self.checkbox = CheckBox("Accept terms")
         theme.add_widget(self.checkbox)
         lyt.addWidget(self.checkbox)
+
+        self.switch = Switch()
+        theme.add_widget(self.switch)
+        lyt.addWidget(self.switch)
+
+        #self.switch.setMinimumSize(100, 50)
+        #self.switch.setFixedSize(100, 50)
+        self.switch.setFixedSize(int(20 + 20 * 2.3), 20 + 2)
 
         self.code = Code()
         theme.add_widget(self.code)

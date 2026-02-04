@@ -14,6 +14,7 @@ from freshqt.widgets.typolabel import TypoLabel
 from freshqt.widgets.kbdlabel import KbdLabel
 from freshqt.widgets.badgelabel import BadgeLabel
 from freshqt.widgets.checkbox import CheckBox
+from freshqt.widgets.switch import Switch
 
 
 __all__ = (
@@ -21,5 +22,7 @@ __all__ = (
     "Code",
     "TypoLabel",
     "KbdLabel",
-    "BadgeLabel"
+    "BadgeLabel",
+    "CheckBox",
+    "Switch"
 )

@@ -10,14 +10,14 @@
 
 from time import perf_counter
 
-from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtCore import pyqtSignal, QObject
 
 from freshqt.core.math import clamp
 from freshqt.core.models import TweenRepeatMode
 from freshqt.animation.easings import Easing
 
 
-class Tween:
+class Tween(QObject):
     """
     Animation interpolation handler.
 
@@ -58,6 +58,8 @@ class Tween:
         value
             Initial value.
         """
+        super().__init__()
+
         self.start_value, self.end_value = start_value, end_value
         self.value = clamp(value, self.start_value, self.end_value)
         self.value_normalized = (self.value - self.start_value) / (self.end_value - self.start_value)
@@ -76,7 +78,7 @@ class Tween:
             reverse: bool = False,
             easing: Easing = Easing.LINEAR,
             repeat: TweenRepeatMode = TweenRepeatMode.NONE
-            ) -> None:
+        ) -> None:
         """
         Start playing the animation.
         
