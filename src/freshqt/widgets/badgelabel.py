@@ -15,6 +15,7 @@ from freshqt.core.typing import ColorLike
 from freshqt.core.theme import Theme
 from freshqt.core.models import TypographyType
 from freshqt.widgets.typolabel import TypoLabel
+from freshqt.core.color import WCAG, WCAG_NORMAL_TEXT
 
 
 class BadgeLabel(TypoLabel):
@@ -79,7 +80,11 @@ class BadgeLabel(TypoLabel):
         if self.__color is None:
             self.__color = self.__theme.qcolor(self.__theme.palette.brand_primary)
 
-        super().update_theme(theme)
+        text_color = self.__theme.qcolor(self.__theme.palette.text_primary)
+        if WCAG(text_color, self.__color) < WCAG_NORMAL_TEXT:
+            text_color = self.__theme.qcolor(self.__theme.palette.text_fallback)
+
+        super().update_theme(theme, text_color=text_color)
 
     def paintEvent(self, a0) -> None:
         if self.__theme is None: return
@@ -88,16 +93,18 @@ class BadgeLabel(TypoLabel):
         pt.setRenderHint(QPainter.RenderHint.Antialiasing, on=True)
 
         # Usual widget geometry and label's text size is not the same
-        size = self.sizeHint()
+        #size = self.sizeHint()
+        w = self.width()
+        h = self.height()
 
         border_radius = self.__border_radius
         if border_radius < 0.0:
-            border_radius = size.height() / 2
+            border_radius = min(w, h) * 0.5
 
         clippath = QPainterPath()
-        clippath.addRoundedRect(0, 0, size.width(), size.height(), border_radius, border_radius)
+        clippath.addRoundedRect(0, 0, w, h, border_radius, border_radius)
         pt.setClipPath(clippath)
 
-        pt.fillRect(0, 0, size.width(), size.height(), self.__color)
+        pt.fillRect(0, 0, w, h, self.__color)
 
         super().paintEvent(a0)

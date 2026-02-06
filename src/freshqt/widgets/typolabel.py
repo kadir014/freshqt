@@ -9,6 +9,7 @@
 """
 
 from PyQt6.QtWidgets import QWidget, QLabel
+from PyQt6.QtGui import QColor
 
 from freshqt.core.theme import Theme, Themeable
 from freshqt.core.models import TypographyType
@@ -39,13 +40,16 @@ class TypoLabel(QLabel, Themeable):
         self.update_theme()
         self.update_theme_role()
 
-    def update_theme(self, theme: Theme) -> None:
+    def update_theme(self, theme: Theme, text_color: QColor | None = None) -> None:
         font_size = int(round(theme.get_typo_size(self.__type) * theme.font_scale))
         if font_size <= 0:
             font_size = 1
 
+        if text_color is None:
+            text_color = theme.qcolor(theme.palette.text_primary)
+
         self.setStyleSheet(f"""
             font-family: {theme.font_family};
             font-size: {font_size}px;
-            color: {theme.qss(theme.palette.text_primary)};
+            color: {theme.qss(text_color)};
         """)

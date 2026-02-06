@@ -10,7 +10,7 @@
 
 import platform
 
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QT_VERSION_STR, PYQT_VERSION_STR
 from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout
 from PyQt6.QtGui import QFont, QIcon
 
@@ -22,14 +22,16 @@ from freshqt.widgets import (
     BadgeLabel,
     CheckBox,
     Switch,
-    Button
+    Button,
+    Divider
 )
 from freshqt.core import Theme, Themeable, change_titlebar_theme
+from freshqt.core import __version__ as freshqt_version
 from freshqt.assets import HEROICONS
 
 from freshqt.palettes.dracula import UI_DRACULA
 from freshqt.palettes.alucard import UI_ALUCARD
-from freshqt.palettes.catpuccin import UI_CATPUCCIN_FRAPPE
+from freshqt.palettes.catpuccin import UI_CATPUCCIN_FRAPPE, UI_CATPUCCIN_LATTE
 
 
 # You would probably have a smarter way to handle these global
@@ -44,8 +46,31 @@ class MainWindow(QWidget, Themeable):
 
         self.setWindowTitle("FreshQT Design System - Gallery Demo")
 
+        mainlyt = QHBoxLayout()
+        mainlyt.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.setLayout(mainlyt)
+
+        self.plyt = QVBoxLayout()
+        self.plyt.setAlignment(Qt.AlignmentFlag.AlignTop)
+        mainlyt.addLayout(self.plyt)
+
+        self.add_badge_pair("Python", platform.python_version())
+        self.add_badge_pair("Qt", QT_VERSION_STR)
+        self.add_badge_pair("PyQt", PYQT_VERSION_STR)
+        self.add_badge_pair("FreshQt", freshqt_version)
+
+        divider = Divider(orientation=Qt.Orientation.Horizontal)
+        theme.add_widget(divider)
+        self.plyt.addWidget(divider)
+
+
+        divider = Divider(orientation=Qt.Orientation.Vertical)
+        theme.add_widget(divider)
+        mainlyt.addWidget(divider)
+
+
         lyt = QVBoxLayout()
-        self.setLayout(lyt)
+        mainlyt.addLayout(lyt)
 
         self.slider = Slider()
         theme.add_widget(self.slider)
@@ -96,15 +121,17 @@ class MainWindow(QWidget, Themeable):
         self.switch = Switch()
         theme.add_widget(self.switch)
         lyt.addWidget(self.switch)
-
-        b0 = Button("Accept terms")
-        theme.add_widget(b0)
-        lyt.addWidget(b0)
-        b0.setMinimumSize(75, 40)
-
-        #self.switch.setMinimumSize(100, 50)
-        #self.switch.setFixedSize(100, 50)
         self.switch.setFixedSize(int(25 + 25 * 1.3), 25)
+
+        btn_lyt = QHBoxLayout()
+        btn_lyt.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        lyt.addLayout(btn_lyt)
+        variants = (Button.Variant.BRAND, Button.Variant.SECONDARY, Button.Variant.OUTLINE, Button.Variant.GHOST)
+        for variant in variants:
+            btn = Button(variant.name.lower().capitalize(), variant=variant)
+            theme.add_widget(btn)
+            btn_lyt.addWidget(btn)
+            btn.setFixedSize(90, 32)
 
         self.code = Code()
         theme.add_widget(self.code)
@@ -130,6 +157,18 @@ def font_family(self) -> str:
     def update_theme(self, theme: Theme) -> None:
         self.setStyleSheet(f"background-color: {theme.qss(theme.palette.background_primary)};")
 
+    def add_badge_pair(self, left: str, right: str) -> None:
+        pair_lyt = QHBoxLayout()
+        self.plyt.addLayout(pair_lyt)
+
+        left_lbl = TypoLabel(left)
+        theme.add_widget(left_lbl)
+        pair_lyt.addWidget(left_lbl)
+
+        right_lbl = BadgeLabel(right, color=theme.palette.background_secondary)
+        theme.add_widget(right_lbl)
+        pair_lyt.addWidget(right_lbl)
+
     def slider_change(self):
         v = self.slider.value()
 
@@ -154,9 +193,8 @@ def main() -> None:
 
         print(f"Icon '{iconpath}' loaded with key: {iconname}")
 
-    #theme.update_palette(UI_CATPUCCIN_FRAPPE)
+    theme.update_palette(UI_CATPUCCIN_LATTE)
     theme.font_family = "Outfit"
-    theme.update_widgets()
 
     main_window = MainWindow()
     theme.add_widget(main_window)

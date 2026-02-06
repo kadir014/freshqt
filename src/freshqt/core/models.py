@@ -36,7 +36,30 @@ class TweenRepeatMode(Enum):
 @dataclass
 class SyntaxPalette:
     """
-    Colors for each syntactic element of a language.
+    Colors for each almost-language-agnostic syntactic element.
+
+    Fields
+    ------
+    identifier
+        Default color for all identifiers and unclassified symbols
+    operator
+        Operators and symbolic expressions
+    brace
+        Braces, brackets, and structural punctuation
+    string
+        String and character literals
+    comment
+        Line and block comments
+    keyword
+        Language keywords and reserved words
+    numeric
+        Numeric literals
+    this
+        Contextual self-referencing keywords (e.g. `this`, `self`, `cls`, ...)
+    function
+        Function and method names
+    preprocessor
+        Preprocessor directives, annotations, or decorators
     """
 
     identifier: ColorLike
@@ -55,6 +78,41 @@ class SyntaxPalette:
 class UIPalette:
     """
     Colors for primary elements of the user interface.
+
+    Fields
+    ------
+    is_dark
+        Whether this palette is light text on dark surface (dark theme) or
+        dark text on light surface (light theme)
+    background_primary
+        Primary background surface color
+    background_secondary
+        Secondary background surface color
+    background_tertiary
+        Tertiary background surface color
+    text_primary
+        Primary foreground color for text content and UI glyphs
+    text_secondary
+        Secondary foreground color for text content and UI glyphs
+    text_tertiary
+        Tertiary foreground color for text content and UI glyphs
+    text_fallback
+        Foreground color used when the primary text color fails contrast
+        requirements on the current surface
+    brand_primary
+        Primary branding accent color
+    brand_secondary
+        Secondary branding accent color
+    brand_tertiary
+        Tertiary branding accent color
+    text_selection
+        Background color for text selection
+    state_success
+        Success state color
+    state_warning
+        Warning state color
+    state_error
+        Error state color
     """
 
     is_dark: bool
@@ -66,6 +124,7 @@ class UIPalette:
     text_primary: ColorLike
     text_secondary: ColorLike
     text_tertiary: ColorLike
+    text_fallback: ColorLike
 
     brand_primary: ColorLike
     brand_secondary: ColorLike

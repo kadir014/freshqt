@@ -13,7 +13,9 @@ from freshqt.core.models import SyntaxPalette, UIPalette
 
 # Third-party licenses are listed in the NOTICE file at the project root
 
-# https://draculatheme.com
+# Dracula official home: https://draculatheme.com
+
+
 DRACULA = {
     "background": "#282A36",
     "foreground": "#F8F8F2",
@@ -49,6 +51,7 @@ UI_DRACULA = UIPalette(
     text_primary         = DRACULA["foreground"],
     text_secondary       = "#ebebe1",
     text_tertiary        = "#cfcfc4",
+    text_fallback        = "#1f1f1f",
     brand_primary        = DRACULA["purple"],
     brand_secondary      = DRACULA["pink"],
     brand_tertiary       = DRACULA["cyan"],

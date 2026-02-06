@@ -191,15 +191,9 @@ class Theme:
     @staticmethod
     def qcolor(color: ColorLike) -> QColor:
         """ Convert color to QColor. """
-
-        if isinstance(color, str):
-            return QColor(color)
         
-        elif isinstance(color, (tuple, list)):
+        if isinstance(color, (tuple, list)):
             return QColor(*color)
-        
-        elif isinstance(color, QColor):
-            return color
         
         # Just hope the QColor constructor supports it
         return QColor(color)

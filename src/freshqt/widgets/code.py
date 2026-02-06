@@ -17,6 +17,7 @@ from PyQt6.QtGui import QColor, QSyntaxHighlighter, QPainter, QBrush, QPen, QTex
 from freshqt.core.models import SyntaxPalette
 from freshqt.core.theme import Theme, Themeable
 from freshqt.palettes.dracula import SYNTAX_DRACULA
+from freshqt.palettes.catpuccin import SYNTAX_CATPUCCIN_LATTE
 
 
 class HighlighterLanguage(Enum):
@@ -28,7 +29,7 @@ class Highlighter(QSyntaxHighlighter):
     def __init__(self,
             parent: QTextDocument | None = None,
             language: HighlighterLanguage = HighlighterLanguage.PYTHON,
-            syntax_palette: SyntaxPalette = SYNTAX_DRACULA
+            syntax_palette: SyntaxPalette = SYNTAX_CATPUCCIN_LATTE
             ) -> None:
         super().__init__(parent)
 

@@ -13,7 +13,9 @@ from freshqt.core.models import SyntaxPalette, UIPalette
 
 # Third-party licenses are listed in the NOTICE file at the project root
 
-# https://draculatheme.com
+# Dracula official home: https://draculatheme.com
+
+
 ALUCARD = {
     "background": "#fffbeb",
     "foreground": "#1f1f1f",
@@ -49,6 +51,7 @@ UI_ALUCARD = UIPalette(
     text_primary         = ALUCARD["foreground"],
     text_secondary       = "#2b2a2a",
     text_tertiary        = "#3b3939",
+    text_fallback        = "#F8F8F2",
     brand_primary        = ALUCARD["purple"],
     brand_secondary      = ALUCARD["pink"],
     brand_tertiary       = ALUCARD["cyan"],

@@ -124,7 +124,7 @@ class Switch(QWidget, Themeable):
         handle_color = self.handle_color
 
         # Border thickness
-        th = 1.5
+        th = 1.25
         thh = th * 0.5
 
         # Weird overlapping with antialiased arcs
