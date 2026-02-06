@@ -9,12 +9,13 @@
 """
 
 from freshqt.widgets.slider import Slider
-from freshqt.widgets.code import Code
+from freshqt.widgets.checkbox import CheckBox
+from freshqt.widgets.switch import Switch
+from freshqt.widgets.button import Button
 from freshqt.widgets.typolabel import TypoLabel
 from freshqt.widgets.kbdlabel import KbdLabel
 from freshqt.widgets.badgelabel import BadgeLabel
-from freshqt.widgets.checkbox import CheckBox
-from freshqt.widgets.switch import Switch
+from freshqt.widgets.code import Code
 
 
 __all__ = (
@@ -24,5 +25,6 @@ __all__ = (
     "KbdLabel",
     "BadgeLabel",
     "CheckBox",
-    "Switch"
+    "Switch",
+    "Button"
 )

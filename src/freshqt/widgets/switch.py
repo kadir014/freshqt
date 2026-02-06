@@ -8,7 +8,7 @@
 
 """
 
-from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtCore import Qt, pyqtSignal, QPointF, QRectF
 from PyQt6.QtWidgets import QWidget
 from PyQt6.QtGui import QPainter, QPen, QBrush, QColor
 
@@ -117,48 +117,82 @@ class Switch(QWidget, Themeable):
         pt.begin(self)
         pt.setRenderHint(QPainter.RenderHint.Antialiasing, on=True)
 
-        radius = 20# self.radius
+        #radius = 50# self.radius
+        radius = self.height()
         on_color = self.on_color
         off_color = self.off_color
         handle_color = self.handle_color
 
-        w = round(self.width() - radius * 2) - 2
+        # Border thickness
+        th = 1.5
+        thh = th * 0.5
 
-        # TODO: Rewrite drawing logic
+        # Weird overlapping with antialiased arcs
+        aa_radius_offset = 1
 
-        pt.fillRect(0, 0, self.width(), self.height(), QColor(255, 0, 0))
+        r = radius
+        rh = r * 0.5
+        w = self.width() - radius * 2.0
+
+        # why the hell would you require 1/16 of a degree ...
+        semi_start = 90 * 16
+        semi_end = 180 * 16
+
+        # Inside knob radius
+        in_r = r * 0.27
 
         if self.on:
-            pen = QPen(on_color, 1.5, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin)
-            pt.setPen(pen)
-            brush = QBrush(on_color)
-            pt.setBrush(brush)
-
-            r = radius
-
-            pt.drawChord(r, 1, r, r, 90*16, 180*16)
-            pt.drawChord(r+w, 1, r, r, -90*16, 180*16)
-            pt.drawRect(r+r//2, 1, w, r)
-
-            pt.setBrush(QBrush(handle_color))
-            offset = r*0.4
-            pt.drawEllipse(round(r+offset/2+self.__tween.value*w), round(1+offset/2), round(r-offset) , round(r-offset))
-
+            border_color = on_color
+            back_color = on_color
+            knob_border = QColor(0, 0, 0, 0)
+            knob_fill = QColor(handle_color)
         else:
-            pen = QPen(off_color, 1.5, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin)
-            pt.setPen(pen)
+            border_color = off_color
+            back_color = QColor(0, 0, 0, 0)
+            knob_border = QColor(0, 0, 0, 0)
+            knob_fill = QColor(off_color)
 
-            r = radius
+        pen = QPen(border_color, th, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin)
+        pt.setPen(pen)
+        brush = QBrush(back_color)
+        pt.setBrush(brush)
 
-            pt.drawArc(r, 1, r, r, 90*16, 180*16)
-            pt.drawArc(r+w, 1, r, r, -90*16, 180*16)
-            pt.drawLine(r+r//2, 1, r+w+r//2, 1)
-            pt.drawLine(r+r//2, r+1, r+w+r//2, r+1)
+        # Draw capsule borders
+        # TODO: As thickness increases, the arc goes from semi-circle to ellipse
+        if self.on:
+            pt.drawChord(
+                QRectF(thh, thh, r, r - th),
+                semi_start, semi_end
+            )
+            pt.drawChord(
+                QRectF(r + w - thh, thh, r, r - th),
+                -semi_start, semi_end
+            )
+            pt.drawRect(QRectF(rh + aa_radius_offset, thh, self.width() - r, r - th))
+        else:
+            pt.drawArc(
+                QRectF(thh, thh, r, r - th),
+                semi_start, semi_end
+            )
+            pt.drawArc(
+                QRectF(r + w - thh, thh, r, r - th),
+                -semi_start, semi_end
+            )
+            pt.drawLine(
+                QPointF(rh + aa_radius_offset, thh),
+                QPointF(r + w + rh - aa_radius_offset, thh)
+            )
+            pt.drawLine(
+                QPointF(rh + aa_radius_offset, r - thh),
+                QPointF(r + w + rh - aa_radius_offset, r - thh)
+            )
 
-            brush = QBrush(off_color)
-            pt.setBrush(brush)
-            offset = r*0.4
-            pt.drawEllipse(round(r+offset/2+self.__tween.value*w), round(offset/2+1), round(r-offset), round(r-offset))
+        pen = QPen(knob_border, th, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin)
+        pt.setPen(pen)
+
+        brush = QBrush(knob_fill)
+        pt.setBrush(brush)
+        pt.drawEllipse(QPointF(rh + self.__tween.value * (self.width() - r), rh), in_r, in_r)
 
         pt.end()
 

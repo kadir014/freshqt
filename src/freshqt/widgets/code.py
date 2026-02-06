@@ -227,6 +227,7 @@ class Code(QWidget, Themeable):
                 font-family: "Cascadia Code";
                 font-size: 14px;
                 color: {theme.qss(theme.palette.text_primary)};
+                selection-background-color: {theme.qss(theme.palette.text_selection)};
                 background-color: {theme.qss(theme.palette.background_primary)};
                 border-top: 1px solid {border_color};
                 border-right: 1px solid {border_color};

@@ -1,10 +1,11 @@
-Third party projects this software includes parts from
+This software includes third-party components from the following projects:
 
-Dracula Theme, MIT License
+
+Dracula Theme, MIT License (`freshqt/palettes/dracula.py`, `freshqt/palettes/alucard.py`)
 - https://draculatheme.com
 
-Catpuccin Themes, MIT License
+Catpuccin Themes, MIT License (`freshqt/palettes/catpuccin.py`)
 - https://catppuccin.com
 
-Hero Icons, MIT License
+Hero Icons, MIT License (`freshqt/heroicons`)
 - https://heroicons.com

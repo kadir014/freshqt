@@ -11,7 +11,7 @@
 from freshqt.core.models import SyntaxPalette, UIPalette
 
 
-# See the licenses in NOTICE file at root for third party licenses
+# Third-party licenses are listed in the NOTICE file at the project root
 
 # https://draculatheme.com
 ALUCARD = {

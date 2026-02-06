@@ -12,7 +12,7 @@ import platform
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout
-from PyQt6.QtGui import QFont
+from PyQt6.QtGui import QFont, QIcon
 
 from freshqt.widgets import (
     Slider,
@@ -21,17 +21,21 @@ from freshqt.widgets import (
     KbdLabel,
     BadgeLabel,
     CheckBox,
-    Switch
+    Switch,
+    Button
 )
 from freshqt.core import Theme, Themeable, change_titlebar_theme
+from freshqt.assets import HEROICONS
 
 from freshqt.palettes.dracula import UI_DRACULA
 from freshqt.palettes.alucard import UI_ALUCARD
 from freshqt.palettes.catpuccin import UI_CATPUCCIN_FRAPPE
 
 
-# Global theme manager
+# You would probably have a smarter way to handle these global
+# states, but for this example, they're enough.
 theme = Theme()
+icons: dict[str, QIcon] = {}
 
 
 class MainWindow(QWidget, Themeable):
@@ -86,14 +90,21 @@ class MainWindow(QWidget, Themeable):
         self.checkbox = CheckBox("Accept terms")
         theme.add_widget(self.checkbox)
         lyt.addWidget(self.checkbox)
+        self.checkbox.indicator_icon = icons["check"]
+        self.checkbox.toggle()
 
         self.switch = Switch()
         theme.add_widget(self.switch)
         lyt.addWidget(self.switch)
 
+        b0 = Button("Accept terms")
+        theme.add_widget(b0)
+        lyt.addWidget(b0)
+        b0.setMinimumSize(75, 40)
+
         #self.switch.setMinimumSize(100, 50)
         #self.switch.setFixedSize(100, 50)
-        self.switch.setFixedSize(int(20 + 20 * 2.3), 20 + 2)
+        self.switch.setFixedSize(int(25 + 25 * 1.3), 25)
 
         self.code = Code()
         theme.add_widget(self.code)
@@ -135,7 +146,17 @@ def main() -> None:
         font.setHintingPreference(QFont.HintingPreference.PreferNoHinting)
         app.setFont(font)
 
+    # SVG icons have to be loaded before any raster icons so Qt can select proper icon engine
+    for iconname in HEROICONS:
+        iconpath = HEROICONS[iconname]
+        icon = QIcon(str(iconpath.absolute()))
+        icons[iconname] = icon
+
+        print(f"Icon '{iconpath}' loaded with key: {iconname}")
+
     #theme.update_palette(UI_CATPUCCIN_FRAPPE)
+    theme.font_family = "Outfit"
+    theme.update_widgets()
 
     main_window = MainWindow()
     theme.add_widget(main_window)
