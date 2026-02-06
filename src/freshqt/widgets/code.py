@@ -11,13 +11,12 @@
 from enum import Enum, auto
 
 from PyQt6.QtCore import Qt, QRegularExpression, QRect
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPlainTextEdit, QLabel
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPlainTextEdit, QLabel, QSpacerItem, QSizePolicy
 from PyQt6.QtGui import QColor, QSyntaxHighlighter, QPainter, QBrush, QPen, QTextDocument, QTextCharFormat
 
 from freshqt.core.models import SyntaxPalette, SyntaxLanguage
 from freshqt.core.theme import Theme, Themeable
 from freshqt.palettes.dracula import SYNTAX_DRACULA
-from freshqt.palettes.catpuccin import SYNTAX_CATPUCCIN_LATTE
 
 
 _RULESETS = {
@@ -60,7 +59,7 @@ class Highlighter(QSyntaxHighlighter):
     def __init__(self,
             parent: QTextDocument | None = None,
             language: SyntaxLanguage = SyntaxLanguage.PLAIN,
-            syntax_palette: SyntaxPalette = SYNTAX_CATPUCCIN_LATTE
+            syntax_palette: SyntaxPalette = SYNTAX_DRACULA
             ) -> None:
         super().__init__(parent)
 
@@ -136,6 +135,10 @@ class Highlighter(QSyntaxHighlighter):
         rules += [(r"\b[+-]?0[xX][0-9A-Fa-f]+[lL]?\b", 0, syntax_theme["numeric"])]
         rules += [(r"\b[+-]?[0-9]+(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?\b", 0, syntax_theme["numeric"])]
 
+        # Language-specific rules
+        if self.__language == SyntaxLanguage.PYTHON:
+            rules += [(r"[@][A-Za-z0-9_]+", 0, syntax_theme["preprocessor"])]
+
         self.__rules = [(QRegularExpression(pat), index, fmt) for (pat, index, fmt) in rules]
 
     def highlightBlock(self, text: str) -> None:
@@ -209,7 +212,15 @@ class Code(QWidget, Themeable):
         # TODO: Make these properties
         self.line_col_width = 37
         self.line_no_alignment = Qt.AlignmentFlag.AlignRight
-        lyt.addSpacing(self.line_col_width)
+        self.__show_line_no = True
+        self.__inner_borders = False
+
+        self.__line_col_spacer = QSpacerItem(
+            self.line_col_width, self.line_col_width,
+            QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed
+        )
+        #lyt.addSpacing(self.line_col_width)
+        lyt.addSpacerItem(self.__line_col_spacer)
 
         self.__editor_lyt = QVBoxLayout()
         self.__editor_lyt.setSpacing(0)
@@ -273,6 +284,39 @@ class Code(QWidget, Themeable):
         # Update rich text engine
         self.text = self.text
 
+    @property
+    def inner_borders(self) -> bool:
+        """ Whether to display inner borders or not. """
+        return self.__inner_borders
+    
+    @inner_borders.setter
+    def inner_borders(self, value: bool) -> None:
+        self.__inner_borders = value
+        self.update_theme(self.__theme)
+        self.update()
+
+    def show_status_bar(self) -> None:
+        """ Show status bar. """
+        self.__statusbar.show()
+
+    def hide_status_bar(self) -> None:
+        """ Hide status bar. """
+        self.__statusbar.hide()
+
+    def show_line_no(self) -> None:
+        """ Show line number column. """
+        self.__show_line_no = True
+        self.layout().insertSpacerItem(1, self.__line_col_spacer)
+        self.update_theme(self.__theme)
+        self.update()
+
+    def hide_line_no(self) -> None:
+        """ Hide line number column. """
+        self.__show_line_no = False
+        self.layout().removeItem(self.__line_col_spacer)
+        self.update_theme(self.__theme)
+        self.update()
+
     def update_theme(self, theme: Theme) -> None:
         self.__theme = theme
 
@@ -283,6 +327,14 @@ class Code(QWidget, Themeable):
         border_color = theme.qss(theme.palette.text_tertiary)
 
         self.__statusbar.setStyleSheet("background-color: transparent;")
+
+        left_border_props = ""
+        if self.__inner_borders or not self.__show_line_no:
+            left_border_props = f"""
+                border-left: 1px solid {border_color};
+                border-top-left-radius: 7px;
+                border-bottom-left-radius: 7px;
+            """
 
         self.setStyleSheet(f"""
             QPlainTextEdit {{
@@ -296,6 +348,7 @@ class Code(QWidget, Themeable):
                 border-top-right-radius: 7px;
                 border-bottom: 1px solid {border_color};
                 border-bottom-right-radius: 7px;
+                {left_border_props}
             }}
 
             QLabel {{
@@ -325,21 +378,20 @@ class Code(QWidget, Themeable):
         pt.setBrush(QBrush(self.__theme.qcolor(self.__theme.palette.background_secondary)))
         pt.drawRoundedRect(0, 0, self.width(), self.height(), 7, 7)
 
-        pt.setBrush(QBrush())
+        if self.__show_line_no:
+            font = self.__editor.font()
+            pt.setFont(font)
+            pt.setPen(outline_pen)
 
-        font = self.__editor.font()
-        pt.setFont(font)
-        pt.setPen(outline_pen)
+            gap = font.pixelSize() + 3
+            for i in range(self.height() // gap + 2):
+                line_no = i + slider_value
+                digits = len(str(line_no)) - 1
+                y = i * gap + 6
 
-        gap = font.pixelSize() + 3
-        for i in range(self.height() // gap + 2):
-            line_no = i + slider_value
-            digits = len(str(line_no)) - 1
-            y = i * gap + 6
-
-            col_margin = 5
-            pt.drawText(
-                QRect(0, y, self.line_col_width - col_margin, 50),
-                self.line_no_alignment,
-                str(line_no)
-            )
+                col_margin = 5
+                pt.drawText(
+                    QRect(0, y, self.line_col_width - col_margin, 50),
+                    self.line_no_alignment,
+                    str(line_no)
+                )

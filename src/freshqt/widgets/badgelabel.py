@@ -8,7 +8,7 @@
 
 """
 
-from PyQt6.QtWidgets import QWidget
+from PyQt6.QtWidgets import QWidget, QSizePolicy
 from PyQt6.QtGui import QPainter, QPainterPath, QColor
 
 from freshqt.core.typing import ColorLike
@@ -29,6 +29,8 @@ class BadgeLabel(TypoLabel):
         
         self.setText(text)
         self.setMargin(2)
+
+        self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
 
         self.__border_radius = -1.0
         self.__color0 = color

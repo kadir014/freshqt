@@ -29,9 +29,8 @@ from freshqt.core import Theme, Themeable, change_titlebar_theme, SyntaxLanguage
 from freshqt.core import __version__ as freshqt_version
 from freshqt.assets import HEROICONS
 
-from freshqt.palettes.dracula import UI_DRACULA
-from freshqt.palettes.alucard import UI_ALUCARD
-from freshqt.palettes.catpuccin import UI_CATPUCCIN_FRAPPE, UI_CATPUCCIN_LATTE, SYNTAX_CATPUCCIN_FRAPPE, SYNTAX_CATPUCCIN_LATTE
+from freshqt.palettes.dracula import UI_DRACULA, UI_ALUCARD
+from freshqt.palettes.catppuccin import UI_CATPPUCCIN_FRAPPE, UI_CATPPUCCIN_LATTE, SYNTAX_CATPPUCCIN_FRAPPE, SYNTAX_CATPPUCCIN_LATTE
 
 
 # You would probably have a smarter way to handle these global
@@ -66,6 +65,27 @@ class MainWindow(QWidget, Themeable):
         theme.add_widget(divider)
         self.plyt.addWidget(divider)
 
+        hslider_lyt = QHBoxLayout()
+        self.plyt.addLayout(hslider_lyt)
+        hslider_lyt.setContentsMargins(0, 0, 0, 0)
+        fntlbl = TypoLabel("Font Size")
+        theme.add_widget(fntlbl)
+        hslider_lyt.addWidget(fntlbl)
+        self.font_size_lbl = BadgeLabel("14px")
+        theme.add_widget(self.font_size_lbl)
+        hslider_lyt.addWidget(self.font_size_lbl)
+
+        self.font_slider = Slider()
+        theme.add_widget(self.font_slider)
+        self.plyt.addWidget(self.font_slider)
+        self.font_slider.setFixedHeight(15)
+        self.font_slider.groove_height = 6
+
+        self.font_slider.setMinimum(0)
+        self.font_slider.setMaximum(200)
+        self.font_slider.setValue(100)
+        self.font_slider.valueChanged.connect(self.font_slider_change)
+
 
         divider = Divider(orientation=Qt.Orientation.Vertical)
         theme.add_widget(divider)
@@ -80,11 +100,6 @@ class MainWindow(QWidget, Themeable):
         lyt.addWidget(self.slider)
         self.slider.setFixedHeight(15)
         self.slider.groove_height = 6
-
-        self.slider.setMinimum(0)
-        self.slider.setMaximum(200)
-        self.slider.setValue(100)
-        self.slider.valueChanged.connect(self.slider_change)
 
         lb0 = TypoLabel("Hello")
         theme.add_widget(lb0)
@@ -162,12 +177,15 @@ def font_family(self) -> str:
 
         self.code.text = code_str.strip()
         self.code.language = SyntaxLanguage.PYTHON
+        self.code.hide_line_no()
+        self.code.hide_status_bar()
 
     def update_theme(self, theme: Theme) -> None:
         self.setStyleSheet(f"background-color: {theme.qss(theme.palette.background_primary)};")
 
     def add_badge_pair(self, left: str, right: str) -> None:
         pair_lyt = QHBoxLayout()
+        pair_lyt.setContentsMargins(0, 0, 0, 0)
         self.plyt.addLayout(pair_lyt)
 
         left_lbl = TypoLabel(left)
@@ -178,17 +196,19 @@ def font_family(self) -> str:
         theme.add_widget(right_lbl)
         pair_lyt.addWidget(right_lbl)
 
-    def slider_change(self) -> None:
-        v = self.slider.value()
+    def font_slider_change(self) -> None:
+        v = self.font_slider.value()
         theme.font_scale = v / 100
+        px_size = int(14.0 * theme.font_scale)
+        self.font_size_lbl.setText(f"{px_size}px")
 
     def switch_toggled(self) -> None:
         if self.switch.on:
-            theme.update_palette(UI_CATPUCCIN_LATTE)
-            self.code.syntax_palette = SYNTAX_CATPUCCIN_LATTE
+            theme.update_palette(UI_CATPPUCCIN_LATTE)
+            self.code.syntax_palette = SYNTAX_CATPPUCCIN_LATTE
         else:
-            theme.update_palette(UI_CATPUCCIN_FRAPPE)
-            self.code.syntax_palette = SYNTAX_CATPUCCIN_FRAPPE
+            theme.update_palette(UI_CATPPUCCIN_FRAPPE)
+            self.code.syntax_palette = SYNTAX_CATPPUCCIN_FRAPPE
 
         if platform.system() == "Windows":
             change_titlebar_theme(self, theme.palette.is_dark)
@@ -212,7 +232,7 @@ def main() -> None:
 
         print(f"Icon '{iconpath}' loaded with key: {iconname}")
 
-    theme.update_palette(UI_CATPUCCIN_FRAPPE)
+    theme.update_palette(UI_CATPPUCCIN_FRAPPE)
     theme.font_family = "Outfit"
 
     main_window = MainWindow()

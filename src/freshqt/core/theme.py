@@ -8,9 +8,10 @@
 
 """
 
-import json
+import platform
 from pathlib import Path
 
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QWidget
 from PyQt6.QtGui import QColor
 
@@ -215,11 +216,70 @@ class Themeable:
         ...
 
 
+def win32_change_titlebar_theme(
+        widget: QWidget,
+        dark: bool,
+        force_update: bool = True
+        ) -> int:
+    import ctypes
+    import ctypes.wintypes
+
+    hwnd = int(widget.winId())
+
+    # https://learn.microsoft.com/en-us/windows/win32/api/dwmapi/ne-dwmapi-dwmwindowattribute
+    DWMWA_USE_IMMERSIVE_DARK_MODE = 20
+
+    dark_mode = ctypes.wintypes.BOOL(int(dark))
+
+    dwmapi = ctypes.windll.dwmapi
+
+    ret = dwmapi.DwmSetWindowAttribute(
+        hwnd,
+        DWMWA_USE_IMMERSIVE_DARK_MODE,
+        ctypes.byref(dark_mode),
+        ctypes.sizeof(dark_mode)
+    )
+
+    if force_update and ret == 0:
+        """
+        I went with this resizing approach, because none of the win32 API
+        calls repainted the DWM area. Only this seems to work the most stable.
+
+        Solutions failed:
+        - widget.hide() & widget.show()
+           - Too unstable, breaks geometry and layouts
+        - dwmapi.DwmFlush
+        - user32.UpdateWindow
+        - user32.RedrawWindow
+           - None of the flags work
+        - user32.SetWindowPos
+           - With NOMOVE and NORESIZE flags, it doesn't work
+        """
+
+        was_maximized = widget.isMaximized()
+        
+        if not was_maximized:
+            rect = widget.geometry()
+            w, h = rect.width(), rect.height()
+        else:
+            normal_rect = widget.normalGeometry()
+            w, h = normal_rect.width(), normal_rect.height()
+
+        if was_maximized:
+            widget.showNormal()
+
+        widget.resize(w - 1, h)
+        widget.resize(w, h)
+
+        if was_maximized:
+            widget.showMaximized()
+
+    return ret
+
+
 def change_titlebar_theme(widget: QWidget, dark: bool) -> int:
     """
     Change theme of the titlebar.
-
-    Warning: Only for Windows 10 and above.
 
     Parameters
     ----------
@@ -230,24 +290,11 @@ def change_titlebar_theme(widget: QWidget, dark: bool) -> int:
 
     Returns
     -------
-        Returns 0 if success, otherwise the return code of the Windows API call
+        Returns 0 if success, otherwise the return code of the OS API call
     """
-    import ctypes
-    import ctypes.wintypes
 
-    hwnd = int(widget.winId())
+    if platform.system() == "Windows":
+        return win32_change_titlebar_theme(widget, dark, force_update=True)
 
-    S_OK = 0x00000000
-
-    # https://learn.microsoft.com/en-us/windows/win32/api/dwmapi/ne-dwmapi-dwmwindowattribute
-    DWMWA_USE_IMMERSIVE_DARK_MODE = 20
-    dwmapi = ctypes.windll.dwmapi
-
-    dark_mode = ctypes.wintypes.BOOL(int(dark))
-
-    return dwmapi.DwmSetWindowAttribute(
-        hwnd,
-        DWMWA_USE_IMMERSIVE_DARK_MODE,
-        ctypes.byref(dark_mode),
-        ctypes.sizeof(dark_mode)
-    )
+    else:
+        return 1
