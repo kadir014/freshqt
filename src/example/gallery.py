@@ -25,13 +25,13 @@ from freshqt.widgets import (
     Button,
     Divider
 )
-from freshqt.core import Theme, Themeable, change_titlebar_theme
+from freshqt.core import Theme, Themeable, change_titlebar_theme, SyntaxLanguage
 from freshqt.core import __version__ as freshqt_version
 from freshqt.assets import HEROICONS
 
 from freshqt.palettes.dracula import UI_DRACULA
 from freshqt.palettes.alucard import UI_ALUCARD
-from freshqt.palettes.catpuccin import UI_CATPUCCIN_FRAPPE, UI_CATPUCCIN_LATTE
+from freshqt.palettes.catpuccin import UI_CATPUCCIN_FRAPPE, UI_CATPUCCIN_LATTE, SYNTAX_CATPUCCIN_FRAPPE, SYNTAX_CATPUCCIN_LATTE
 
 
 # You would probably have a smarter way to handle these global
@@ -45,6 +45,9 @@ class MainWindow(QWidget, Themeable):
         super().__init__()
 
         self.setWindowTitle("FreshQT Design System - Gallery Demo")
+
+        if platform.system() == "Windows":
+            change_titlebar_theme(self, theme.palette.is_dark)
 
         mainlyt = QHBoxLayout()
         mainlyt.setAlignment(Qt.AlignmentFlag.AlignLeft)
@@ -96,19 +99,19 @@ class MainWindow(QWidget, Themeable):
             theme.add_widget(kbdlbl)
             kbdlyt.addWidget(kbdlbl)
 
-        bdglbl = BadgeLabel("Badge", color=theme.palette.brand_primary)
+        bdglbl = BadgeLabel("Badge", color="brand_primary")
         theme.add_widget(bdglbl)
         kbdlyt.addWidget(bdglbl)
 
-        bdglbl = BadgeLabel("Success", color=theme.palette.state_success)
+        bdglbl = BadgeLabel("Success", color="state_success")
         theme.add_widget(bdglbl)
         kbdlyt.addWidget(bdglbl)
 
-        bdglbl = BadgeLabel("Warning", color=theme.palette.state_warning)
+        bdglbl = BadgeLabel("Warning", color="state_warning")
         theme.add_widget(bdglbl)
         kbdlyt.addWidget(bdglbl)
 
-        bdglbl = BadgeLabel("Failed", color=theme.palette.state_error)
+        bdglbl = BadgeLabel("Failed", color="state_error")
         theme.add_widget(bdglbl)
         kbdlyt.addWidget(bdglbl)
 
@@ -122,11 +125,19 @@ class MainWindow(QWidget, Themeable):
         theme.add_widget(self.switch)
         lyt.addWidget(self.switch)
         self.switch.setFixedSize(int(25 + 25 * 1.3), 25)
+        self.switch.toggled.connect(self.switch_toggled)
+        self.switch.off_icon = icons["moon"]
+        self.switch.on_icon = icons["sun"]
 
         btn_lyt = QHBoxLayout()
         btn_lyt.setAlignment(Qt.AlignmentFlag.AlignLeft)
         lyt.addLayout(btn_lyt)
-        variants = (Button.Variant.BRAND, Button.Variant.SECONDARY, Button.Variant.OUTLINE, Button.Variant.GHOST)
+        variants = (
+            Button.Variant.BRAND,
+            Button.Variant.SECONDARY,
+            Button.Variant.OUTLINE,
+            Button.Variant.GHOST
+        )
         for variant in variants:
             btn = Button(variant.name.lower().capitalize(), variant=variant)
             theme.add_widget(btn)
@@ -149,10 +160,8 @@ def font_family(self) -> str:
     ...
         """
 
-        self.code.editor.setPlainText(code_str.strip())
-
-        if platform.system() == "Windows":
-            change_titlebar_theme(self, True)
+        self.code.text = code_str.strip()
+        self.code.language = SyntaxLanguage.PYTHON
 
     def update_theme(self, theme: Theme) -> None:
         self.setStyleSheet(f"background-color: {theme.qss(theme.palette.background_primary)};")
@@ -165,14 +174,24 @@ def font_family(self) -> str:
         theme.add_widget(left_lbl)
         pair_lyt.addWidget(left_lbl)
 
-        right_lbl = BadgeLabel(right, color=theme.palette.background_secondary)
+        right_lbl = BadgeLabel(right, color="background_secondary")
         theme.add_widget(right_lbl)
         pair_lyt.addWidget(right_lbl)
 
-    def slider_change(self):
+    def slider_change(self) -> None:
         v = self.slider.value()
-
         theme.font_scale = v / 100
+
+    def switch_toggled(self) -> None:
+        if self.switch.on:
+            theme.update_palette(UI_CATPUCCIN_LATTE)
+            self.code.syntax_palette = SYNTAX_CATPUCCIN_LATTE
+        else:
+            theme.update_palette(UI_CATPUCCIN_FRAPPE)
+            self.code.syntax_palette = SYNTAX_CATPUCCIN_FRAPPE
+
+        if platform.system() == "Windows":
+            change_titlebar_theme(self, theme.palette.is_dark)
 
 
 def main() -> None:
@@ -193,7 +212,7 @@ def main() -> None:
 
         print(f"Icon '{iconpath}' loaded with key: {iconname}")
 
-    theme.update_palette(UI_CATPUCCIN_LATTE)
+    theme.update_palette(UI_CATPUCCIN_FRAPPE)
     theme.font_family = "Outfit"
 
     main_window = MainWindow()

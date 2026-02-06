@@ -91,6 +91,8 @@ class Theme:
         self.__palette = palette
 
         for field in self.__palette.__dataclass_fields__:
+            if field == "is_dark": continue
+            
             c = getattr(self.__palette, field)
             if isinstance(c, tuple):
                 setattr(self.__palette, field, QColor(*c))

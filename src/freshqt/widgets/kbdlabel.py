@@ -45,14 +45,10 @@ class KbdLabel(BadgeLabel):
             ) -> None:
         super().__init__(text=None, type=type, parent=parent)
 
-        self.setText(text, convert_special)
-
+        self.color = "background_secondary"
         self.border_radius = 3.5
 
-    def update_theme(self, theme: Theme) -> None:
-        self.color = theme.qcolor(theme.palette.background_tertiary)
-
-        super().update_theme(theme)
+        self.setText(text, convert_special)
 
     def setText(self, text: str | None, convert_special: bool = True) -> None:
         """

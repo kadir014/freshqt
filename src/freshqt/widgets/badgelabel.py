@@ -31,7 +31,8 @@ class BadgeLabel(TypoLabel):
         self.setMargin(2)
 
         self.__border_radius = -1.0
-        self.__color = color
+        self.__color0 = color
+        self.__color = None
 
         self.__theme: Theme | None = None
 
@@ -58,10 +59,7 @@ class BadgeLabel(TypoLabel):
     
     @color.setter
     def color(self, value: ColorLike) -> None:
-        self.__color = value
-
-        if self.__theme is not None:
-            self.__color = self.__theme.qcolor(self.__color)
+        self.__color0 = value
 
         self.update()
 
@@ -77,12 +75,18 @@ class BadgeLabel(TypoLabel):
     def update_theme(self, theme: Theme) -> None:
         self.__theme = theme
 
-        if self.__color is None:
-            self.__color = self.__theme.qcolor(self.__theme.palette.brand_primary)
+        if self.__color0 is None:
+            self.__color = theme.qcolor(theme.palette.brand_primary)
 
-        text_color = self.__theme.qcolor(self.__theme.palette.text_primary)
+        elif isinstance(self.__color0, str) and hasattr(theme.palette, self.__color0):
+            self.__color = theme.qcolor(getattr(theme.palette, self.__color0))
+
+        else:
+            self.__color = theme.qcolor(self.__color0)
+
+        text_color = theme.qcolor(theme.palette.text_primary)
         if WCAG(text_color, self.__color) < WCAG_NORMAL_TEXT:
-            text_color = self.__theme.qcolor(self.__theme.palette.text_fallback)
+            text_color = theme.qcolor(theme.palette.text_fallback)
 
         super().update_theme(theme, text_color=text_color)
 

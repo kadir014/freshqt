@@ -10,7 +10,7 @@
 
 from PyQt6.QtCore import Qt, pyqtSignal, QPointF, QRectF
 from PyQt6.QtWidgets import QWidget
-from PyQt6.QtGui import QPainter, QPen, QBrush, QColor
+from PyQt6.QtGui import QPainter, QPen, QBrush, QColor, QIcon
 
 from freshqt.core.typing import ColorLike
 from freshqt.core.theme import Theme, Themeable
@@ -43,6 +43,9 @@ class Switch(QWidget, Themeable):
             end_value=1.0,
             value=1.0 * float(self.__on)
         )
+
+        self.off_icon: QIcon = None
+        self.on_icon: QIcon = None
 
         self.setCursor(Qt.CursorShape.PointingHandCursor)
 
@@ -106,15 +109,15 @@ class Switch(QWidget, Themeable):
     def update_theme(self, theme: Theme) -> None:
         self.__theme = theme
 
-        self.on_color = self.__theme.qcolor(self.__theme.palette.brand_primary)
-        self.off_color = self.__theme.qcolor(self.__theme.palette.text_secondary)
-        self.handle_color = self.__theme.qcolor(self.__theme.palette.background_primary)
+        self.on_color = theme.qcolor(theme.palette.brand_primary)
+        self.off_color = theme.qcolor(theme.palette.text_secondary)
+        self.handle_color = theme.qcolor(theme.palette.background_primary)
+        self.icon_color = theme.qcolor(theme.palette.text_primary)
 
     def paintEvent(self, e) -> None:
         if self.__theme is None: return
 
-        pt = QPainter()
-        pt.begin(self)
+        pt = QPainter(self)
         pt.setRenderHint(QPainter.RenderHint.Antialiasing, on=True)
 
         #radius = 50# self.radius
@@ -187,6 +190,7 @@ class Switch(QWidget, Themeable):
                 QPointF(r + w + rh - aa_radius_offset, r - thh)
             )
 
+        # Draw knob
         pen = QPen(knob_border, th, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin)
         pt.setPen(pen)
 
@@ -194,7 +198,27 @@ class Switch(QWidget, Themeable):
         pt.setBrush(brush)
         pt.drawEllipse(QPointF(rh + self.__tween.value * (self.width() - r), rh), in_r, in_r)
 
-        pt.end()
+        # Draw icons
+        pen = QPen(self.icon_color, 1.0)
+        pt.setPen(pen)
+        icon_margin = 4
+        icon_s = radius - icon_margin * 2
+        if self.__on:
+            if self.on_icon is not None:
+                self.on_icon.paint(
+                    pt,
+                    icon_margin, icon_margin,
+                    icon_s, icon_s,
+                    alignment=Qt.AlignmentFlag.AlignCenter
+                )
+        else:
+            if self.off_icon is not None:
+                self.off_icon.paint(
+                    pt,
+                    self.width() - icon_s - icon_margin, icon_margin,
+                    icon_s, icon_s,
+                    alignment=Qt.AlignmentFlag.AlignCenter
+                )
 
         # Force repaint & update if animation is not done
         if self.__tween.is_started:

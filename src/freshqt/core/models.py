@@ -137,6 +137,16 @@ class UIPalette:
     state_error: ColorLike
 
 
+class SyntaxLanguage(Enum):
+    """
+    Supported languages for syntax highlighting.
+    """
+
+    PLAIN = auto()
+    JSON = auto()
+    PYTHON = auto()
+
+
 @dataclass
 class TypographyRamp:
     """
