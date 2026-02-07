@@ -17,6 +17,7 @@ from freshqt.widgets.kbdlabel import KbdLabel
 from freshqt.widgets.badgelabel import BadgeLabel
 from freshqt.widgets.code import Code
 from freshqt.widgets.divider import Divider
+from freshqt.widgets.avatar import Avatar
 
 
 __all__ = (
@@ -28,5 +29,6 @@ __all__ = (
     "CheckBox",
     "Switch",
     "Button",
-    "Divider"
+    "Divider",
+    "Avatar"
 )

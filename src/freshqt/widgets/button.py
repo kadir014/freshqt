@@ -215,8 +215,13 @@ class Button(QAbstractButton, Themeable):
         if expand_h > self.height():
             self.setMinimumHeight(expand_h)
 
+        # Push the text content if there is an icon
+        text_padding = 0
+        if not icon.isNull():
+            text_padding = main_axis - diff
+
         pt.setPen(QPen(text_color))
-        pt.drawText(QRectF(main_axis - diff, 0, w - (main_axis - diff), h), self.__text_alignment, self.__text)
+        pt.drawText(QRectF(text_padding, 0, w - text_padding, h), self.__text_alignment, self.__text)
 
         if not icon.isNull():
             icon.paint(

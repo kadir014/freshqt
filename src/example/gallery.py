@@ -11,8 +11,8 @@
 import platform
 
 from PyQt6.QtCore import Qt, QT_VERSION_STR, PYQT_VERSION_STR, QSize
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout
-from PyQt6.QtGui import QFont, QIcon
+from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QToolTip
+from PyQt6.QtGui import QFont, QIcon, QPixmap
 
 from freshqt.widgets import (
     Slider,
@@ -23,7 +23,8 @@ from freshqt.widgets import (
     CheckBox,
     Switch,
     Button,
-    Divider
+    Divider,
+    Avatar
 )
 from freshqt.core import Theme, Themeable, change_titlebar_theme, SyntaxLanguage
 from freshqt.core import __version__ as freshqt_version
@@ -161,10 +162,10 @@ class MainWindow(QWidget, Themeable):
             btn = Button(variant.name.lower().capitalize(), variant=variant)
             theme.add_widget(btn)
             btn_lyt.addWidget(btn)
-            #btn.setFixedSize(90, 32)
 
-            btn.setIcon(icons["sun"])
-            btn.setIconSize(QSize(18, 18))
+        av0 = Avatar()
+        theme.add_widget(av0)
+        lyt.addWidget(av0)
 
         self.code = Code()
         theme.add_widget(self.code)
