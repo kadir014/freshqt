@@ -10,7 +10,7 @@
 
 import platform
 
-from PyQt6.QtCore import Qt, QT_VERSION_STR, PYQT_VERSION_STR
+from PyQt6.QtCore import Qt, QT_VERSION_STR, PYQT_VERSION_STR, QSize
 from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout
 from PyQt6.QtGui import QFont, QIcon
 
@@ -29,8 +29,12 @@ from freshqt.core import Theme, Themeable, change_titlebar_theme, SyntaxLanguage
 from freshqt.core import __version__ as freshqt_version
 from freshqt.assets import HEROICONS
 
-from freshqt.palettes.dracula import UI_DRACULA, UI_ALUCARD
-from freshqt.palettes.catppuccin import UI_CATPPUCCIN_FRAPPE, UI_CATPPUCCIN_LATTE, SYNTAX_CATPPUCCIN_FRAPPE, SYNTAX_CATPPUCCIN_LATTE
+from freshqt.palettes.catppuccin import (
+    UI_CATPPUCCIN_FRAPPE,
+    UI_CATPPUCCIN_LATTE,
+    SYNTAX_CATPPUCCIN_FRAPPE,
+    SYNTAX_CATPPUCCIN_LATTE
+)
 
 
 # You would probably have a smarter way to handle these global
@@ -81,13 +85,13 @@ class MainWindow(QWidget, Themeable):
         self.font_slider.setFixedHeight(15)
         self.font_slider.groove_height = 6
 
-        self.font_slider.setMinimum(0)
-        self.font_slider.setMaximum(200)
-        self.font_slider.setValue(100)
+        self.font_slider.setMinimum(8)
+        self.font_slider.setMaximum(32)
+        self.font_slider.setValue(14)
         self.font_slider.valueChanged.connect(self.font_slider_change)
 
 
-        divider = Divider(orientation=Qt.Orientation.Vertical)
+        divider = Divider(orientation=Qt.Orientation.Vertical, margin=30)
         theme.add_widget(divider)
         mainlyt.addWidget(divider)
 
@@ -157,7 +161,10 @@ class MainWindow(QWidget, Themeable):
             btn = Button(variant.name.lower().capitalize(), variant=variant)
             theme.add_widget(btn)
             btn_lyt.addWidget(btn)
-            btn.setFixedSize(90, 32)
+            #btn.setFixedSize(90, 32)
+
+            btn.setIcon(icons["sun"])
+            btn.setIconSize(QSize(18, 18))
 
         self.code = Code()
         theme.add_widget(self.code)
@@ -177,7 +184,7 @@ def font_family(self) -> str:
 
         self.code.text = code_str.strip()
         self.code.language = SyntaxLanguage.PYTHON
-        self.code.hide_line_no()
+        #self.code.hide_line_no()
         self.code.hide_status_bar()
 
     def update_theme(self, theme: Theme) -> None:
@@ -198,8 +205,8 @@ def font_family(self) -> str:
 
     def font_slider_change(self) -> None:
         v = self.font_slider.value()
-        theme.font_scale = v / 100
-        px_size = int(14.0 * theme.font_scale)
+        theme.font_scale = v / 14
+        px_size = int(round(14.0 * theme.font_scale))
         self.font_size_lbl.setText(f"{px_size}px")
 
     def switch_toggled(self) -> None:
@@ -230,7 +237,7 @@ def main() -> None:
         icon = QIcon(str(iconpath.absolute()))
         icons[iconname] = icon
 
-        print(f"Icon '{iconpath}' loaded with key: {iconname}")
+        print(f"Icon '{iconname}' loaded at path '{iconpath}'")
 
     theme.update_palette(UI_CATPPUCCIN_FRAPPE)
     theme.font_family = "Outfit"

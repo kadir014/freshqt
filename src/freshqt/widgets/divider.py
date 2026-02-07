@@ -18,7 +18,7 @@ from freshqt.core.models import TypographyType
 
 class Divider(QAbstractButton, Themeable):
     def __init__(self,
-            margin: tuple[int, int] = (15, 15),
+            margin: int = 15,
             orientation: Qt.Orientation = Qt.Orientation.Horizontal,
             parent: QWidget | None = None
             ) -> None:
@@ -37,7 +37,7 @@ class Divider(QAbstractButton, Themeable):
                 QSizePolicy.Policy.Expanding
             )
 
-        self.setMinimumSize(*margin)
+        self.setMinimumSize(margin, margin)
 
         self.__theme: Theme = None
 
@@ -48,7 +48,9 @@ class Divider(QAbstractButton, Themeable):
         if self.__theme is None: return
 
         pt = QPainter(self)
-        pt.setRenderHint(QPainter.RenderHint.Antialiasing, on=True)
+        # IMPORTANT: Only dividers need antialiasing false, since 1-pixel
+        #            completely straight lines break with antialiasing.
+        pt.setRenderHint(QPainter.RenderHint.Antialiasing, on=False)
 
         w, h = self.width(), self.height()
         wh, hh = w * 0.5, h * 0.5

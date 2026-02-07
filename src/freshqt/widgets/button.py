@@ -84,6 +84,8 @@ class Button(QAbstractButton, Themeable):
 
         self.setCursor(Qt.CursorShape.PointingHandCursor)
 
+        self.setMinimumSize(16, 16)
+
         self.__theme: Theme = None
 
     def update_theme(self, theme: Theme) -> None:
@@ -124,6 +126,8 @@ class Button(QAbstractButton, Themeable):
         w, h = self.width(), self.height()
         border_r = self.__border_radius
 
+        main_axis = min(w, h)
+
         # Predefined button variants
         if self.__variant == Button.Variant.BRAND:
             bg_color = self.__theme.qcolor(self.__theme.palette.brand_primary)
@@ -141,7 +145,8 @@ class Button(QAbstractButton, Themeable):
             border_color = self.__theme.qcolor(self.__theme.palette.text_tertiary)
 
         elif self.__variant == Button.Variant.GHOST:
-            bg_color = QColor(0, 0, 0, 0)
+            bg_color = self.__theme.qcolor(self.__theme.palette.background_primary)
+            bg_color.setAlpha(0)
             text_color = self.__theme.qcolor(self.__theme.palette.text_primary)
             border_color = QColor(0, 0, 0, 0)
 
@@ -179,6 +184,13 @@ class Button(QAbstractButton, Themeable):
             border_r, border_r
         )
 
+        icon = self.icon()
+        icon_size = self.iconSize()
+        diff = main_axis - icon_size.width()
+        if diff < 0: diff = 0
+
+        diff_h = int(round(diff * 0.5))
+
         # Render text
         font_size = int(round(self.__theme.get_typo_size(self.__type) * self.__theme.font_scale))
         if font_size <= 0:
@@ -188,8 +200,31 @@ class Button(QAbstractButton, Themeable):
         f.setFamily(self.__theme.font_family)
         f.setPixelSize(font_size)
         pt.setFont(f)
+
+        # Expand minimum size according to content
+        # TODO: They don't resize down
+        bounding = pt.fontMetrics().boundingRect(self.__text)
+
+        padding_w = 5
+        expand_w = bounding.width() + icon_size.width() + (padding_w * 3)
+        expand_h = bounding.height() + icon_size.height()
+
+        if expand_w > self.width():
+            self.setMinimumWidth(expand_w)
+
+        if expand_h > self.height():
+            self.setMinimumHeight(expand_h)
+
         pt.setPen(QPen(text_color))
-        pt.drawText(QRectF(0, 0, w, h), self.__text_alignment, self.__text)
+        pt.drawText(QRectF(main_axis - diff, 0, w - (main_axis - diff), h), self.__text_alignment, self.__text)
+
+        if not icon.isNull():
+            icon.paint(
+                pt,
+                padding_w, diff_h,
+                main_axis - diff, main_axis - diff,
+                alignment=Qt.AlignmentFlag.AlignLeft
+            )
 
         # Force repaint & update if animation is not done
         if self.__hover_tween.is_started or self.__press_tween.is_started:

@@ -46,7 +46,7 @@ class KbdLabel(BadgeLabel):
         super().__init__(text=None, type=type, parent=parent)
 
         self.color = "background_secondary"
-        self.border_radius = 3.5
+        self.border_radius = 4.0
 
         self.setText(text, convert_special)
 
