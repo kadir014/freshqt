@@ -33,8 +33,8 @@ class BadgeLabel(TypoLabel):
         self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
 
         self.__border_radius = -1.0
-        self.__color0 = color
-        self.__color = None
+        self.__bg_color0 = color
+        self.__bg_color = None
 
         self.__theme: Theme | None = None
 
@@ -53,15 +53,15 @@ class BadgeLabel(TypoLabel):
         self.update()
 
     @property
-    def color(self) -> QColor:
+    def bg_color(self) -> QColor:
         """
-        Badge color.
+        Converted badge background color.
         """
-        return self.__color
+        return self.__bg_color
     
-    @color.setter
-    def color(self, value: ColorLike) -> None:
-        self.__color0 = value
+    @bg_color.setter
+    def bg_color(self, value: ColorLike) -> None:
+        self.__bg_color0 = value
 
         self.update()
 
@@ -77,20 +77,20 @@ class BadgeLabel(TypoLabel):
     def update_theme(self, theme: Theme) -> None:
         self.__theme = theme
 
-        if self.__color0 is None:
-            self.__color = theme.qcolor(theme.palette.brand_primary)
+        if self.__bg_color0 is None:
+            self.__bg_color = theme.qcolor(theme.palette.brand_primary)
 
-        elif isinstance(self.__color0, str) and hasattr(theme.palette, self.__color0):
-            self.__color = theme.qcolor(getattr(theme.palette, self.__color0))
+        elif isinstance(self.__bg_color0, str) and hasattr(theme.palette, self.__bg_color0):
+            self.__bg_color = theme.qcolor(getattr(theme.palette, self.__bg_color0))
 
         else:
-            self.__color = theme.qcolor(self.__color0)
+            self.__bg_color = theme.qcolor(self.__bg_color0)
 
         text_color = theme.qcolor(theme.palette.text_primary)
-        if WCAG(text_color, self.__color) < WCAG_NORMAL_TEXT:
+        if WCAG(text_color, self.__bg_color) < WCAG_NORMAL_TEXT:
             text_color = theme.qcolor(theme.palette.text_fallback)
 
-        super().update_theme(theme, text_color=text_color)
+        super().update_theme(theme, force_text_color=text_color)
 
     def paintEvent(self, a0) -> None:
         if self.__theme is None: return
@@ -111,6 +111,6 @@ class BadgeLabel(TypoLabel):
         clippath.addRoundedRect(0, 0, w, h, border_radius, border_radius)
         pt.setClipPath(clippath)
 
-        pt.fillRect(0, 0, w, h, self.__color)
+        pt.fillRect(0, 0, w, h, self.__bg_color)
 
         super().paintEvent(a0)

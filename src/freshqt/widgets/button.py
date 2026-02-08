@@ -37,7 +37,7 @@ class Button(QAbstractButton, Themeable):
     def __init__(self,
             text: str = "",
             type: TypographyType = TypographyType.BODY,
-            icon: QIcon | None = None,
+            icon_name: str = "",
             variant: Variant = Variant.BRAND,
             parent: QWidget | None = None
             ) -> None:
@@ -48,8 +48,9 @@ class Button(QAbstractButton, Themeable):
             Text content of the button
         type
             Typographic type of the text content
-        icon
-            Icon displayed with text content
+        icon_name
+            Themed icon displayed with text content
+            The regular icon set with setIcon has priority
         variant
             Button variant
         parent
@@ -60,7 +61,7 @@ class Button(QAbstractButton, Themeable):
         self.__text = text
         self.__text_alignment = Qt.AlignmentFlag.AlignCenter
         self.__type = type
-        self.__icon = icon
+        self.__icon_name = icon_name
         self.__variant = variant
 
         self.__hover_tween = Tween(
@@ -119,6 +120,16 @@ class Button(QAbstractButton, Themeable):
         if self.__theme is not None:
             self.update_theme(self.__theme)
             self.update_theme_role(self.__theme)
+        self.update()
+
+    @property
+    def icon_name(self) -> str:
+        """ Themed icon name. """
+        return self.__icon_name
+    
+    @icon_name.setter
+    def icon_name(self, value: str) -> None:
+        self.__icon_name = value
         self.update()
 
     @property
@@ -239,8 +250,13 @@ class Button(QAbstractButton, Themeable):
             border_r, border_r
         )
 
+        # Try to load regular icon, try icon manager if it fails
         icon = self.icon()
+        if icon.isNull():
+            icon = self.__theme.icons.get(self.__icon_name, text_color)
+
         icon_size = self.iconSize()
+        
         diff = main_axis - icon_size.width()
         if diff < 0: diff = 0
 

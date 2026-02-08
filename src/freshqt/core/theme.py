@@ -17,6 +17,7 @@ from PyQt6.QtGui import QColor
 
 from freshqt.core.typing import ColorLike
 from freshqt.core.models import UIPalette, TypographyRamp, TypographyType
+from freshqt.core.base_icon_manager import BaseIconManager
 from freshqt.palettes.catppuccin import UI_CATPPUCCIN_FRAPPE
 
 
@@ -44,6 +45,8 @@ class Theme:
             32,
             40
         ))
+
+        self.icons: BaseIconManager | None = None
     
     @property
     def palette(self) -> UIPalette:
