@@ -81,6 +81,8 @@ class UIPalette:
 
     Fields
     ------
+    name
+        Name of the color theme for this color palette
     is_dark
         Whether this palette is light text on dark surface (dark theme) or
         dark text on light surface (light theme)
@@ -115,6 +117,7 @@ class UIPalette:
         Error state color
     """
 
+    name: str
     is_dark: bool
 
     background_primary: ColorLike

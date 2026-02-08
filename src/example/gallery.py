@@ -29,7 +29,6 @@ from freshqt.widgets import (
 from freshqt.core import Theme, Themeable, change_titlebar_theme, SyntaxLanguage
 from freshqt.core import __version__ as freshqt_version
 from freshqt.assets import HEROICONS
-
 from freshqt.palettes.catppuccin import (
     UI_CATPPUCCIN_FRAPPE,
     UI_CATPPUCCIN_LATTE,

@@ -56,6 +56,7 @@ SYNTAX_CATPPUCCIN_FRAPPE = SyntaxPalette(
 )
 
 UI_CATPPUCCIN_FRAPPE = UIPalette(
+    name                 = "Catppuccin Frappé",
     is_dark              = True,
     background_primary   = CATPPUCCIN_FRAPPE["base"],
     background_secondary = CATPPUCCIN_FRAPPE["surface0"],
@@ -113,6 +114,7 @@ SYNTAX_CATPPUCCIN_LATTE = SyntaxPalette(
 )
 
 UI_CATPPUCCIN_LATTE = UIPalette(
+    name                 = "Catppuccin Latte",
     is_dark              = False,
     background_primary   = CATPPUCCIN_LATTE["base"],
     background_secondary = CATPPUCCIN_LATTE["surface0"],

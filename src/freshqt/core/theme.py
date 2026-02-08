@@ -17,7 +17,7 @@ from PyQt6.QtGui import QColor
 
 from freshqt.core.typing import ColorLike
 from freshqt.core.models import UIPalette, TypographyRamp, TypographyType
-from freshqt.palettes.dracula import UI_DRACULA
+from freshqt.palettes.catppuccin import UI_CATPPUCCIN_FRAPPE
 
 
 class Theme:
@@ -29,9 +29,8 @@ class Theme:
         self.__widgets: list["QWidget | Themeable"] = []
         self.__palette: UIPalette
         self.__typo_ramp: TypographyRamp
-        self.__name = ""
 
-        self.update_palette(UI_DRACULA)
+        self.update_palette(UI_CATPPUCCIN_FRAPPE)
 
         self.__font_family = "Arial"
         self.__font_scale = 1.0
@@ -45,11 +44,6 @@ class Theme:
             32,
             40
         ))
-    
-    @property
-    def name(self) -> str:
-        """ Loaded theme name. """
-        return self.__name
     
     @property
     def palette(self) -> UIPalette:
@@ -92,7 +86,7 @@ class Theme:
         self.__palette = palette
 
         for field in self.__palette.__dataclass_fields__:
-            if field == "is_dark": continue
+            if field in ("name", "is_dark"): continue
             
             c = getattr(self.__palette, field)
             if isinstance(c, tuple):

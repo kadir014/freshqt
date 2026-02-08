@@ -86,7 +86,60 @@ class Button(QAbstractButton, Themeable):
 
         self.setMinimumSize(16, 16)
 
-        self.__theme: Theme = None
+        self.__theme: Theme | None = None
+
+    @property
+    def text(self) -> str:
+        """ Text content of the button. """
+        return self.__text
+    
+    @text.setter
+    def text(self, value: str) -> None:
+        self.__text = value
+        self.update()
+
+    @property
+    def text_alignment(self) -> Qt.AlignmentFlag:
+        """ Alignment of the text content of the button. """
+        return self.__text_alignment
+    
+    @text_alignment.setter
+    def text_alignment(self, value: Qt.AlignmentFlag) -> None:
+        self.__text_alignment = value
+        self.update()
+
+    @property
+    def type(self) -> TypographyType:
+        """ Typography type of the label. """
+        return self.__type
+    
+    @type.setter
+    def type(self, value: TypographyType) -> None:
+        self.__type = value
+        if self.__theme is not None:
+            self.update_theme(self.__theme)
+            self.update_theme_role(self.__theme)
+        self.update()
+
+    @property
+    def border_radius(self) -> float:
+        """ Border radius. If negative, completely round. """
+        return self.__border_radius
+    
+    @border_radius.setter
+    def border_radius(self, value: float) -> None:
+        self.__border_radius = value
+        self.update()
+
+    @property
+    def variant(self) -> Variant:
+        """ Button variant. """
+        return self.__variant
+    
+    @variant.setter
+    def variant(self, value: Variant) -> None:
+        self.__variant = value
+        self.update()
 
     def update_theme(self, theme: Theme) -> None:
         self.__theme = theme
@@ -94,22 +147,22 @@ class Button(QAbstractButton, Themeable):
 
     def enterEvent(self, e) -> None:
         super().enterEvent(e)
-        self.__hover_tween.play(0.1, easing=Easing.EASE_IN_SINE)
+        self.__hover_tween.play(0.12, easing=Easing.EASE_IN_SINE)
         self.update()
 
     def leaveEvent(self, e) -> None:
         super().leaveEvent(e)
-        self.__hover_tween.play(0.1, easing=Easing.EASE_IN_SINE, reverse=True)
+        self.__hover_tween.play(0.12, easing=Easing.EASE_IN_SINE, reverse=True)
         self.update()
 
     def mousePressEvent(self, e) -> None:
         super().mousePressEvent(e)
-        self.__press_tween.play(0.075, easing=Easing.EASE_IN_SINE)
+        self.__press_tween.play(0.1, easing=Easing.EASE_IN_SINE)
         self.update()
 
     def mouseReleaseEvent(self, e) -> None:
         super().mouseReleaseEvent(e)
-        self.__press_tween.play(0.075, easing=Easing.EASE_IN_SINE, reverse=True)
+        self.__press_tween.play(0.1, easing=Easing.EASE_IN_SINE, reverse=True)
         self.update()
 
     def update(self) -> None:
@@ -124,9 +177,11 @@ class Button(QAbstractButton, Themeable):
         pt.setRenderHint(QPainter.RenderHint.Antialiasing, on=True)
 
         w, h = self.width(), self.height()
-        border_r = self.__border_radius
-
         main_axis = min(w, h)
+
+        border_r = self.__border_radius
+        if border_r < 0:
+            border_r = main_axis * 0.5
 
         # Predefined button variants
         if self.__variant == Button.Variant.BRAND:
@@ -205,14 +260,14 @@ class Button(QAbstractButton, Themeable):
         # TODO: They don't resize down
         bounding = pt.fontMetrics().boundingRect(self.__text)
 
-        padding_w = 5
+        padding_w = 8
         expand_w = bounding.width() + icon_size.width() + (padding_w * 3)
         expand_h = bounding.height() + icon_size.height()
 
-        if expand_w > self.width():
+        if expand_w > self.width() and expand_w < self.maximumWidth():
             self.setMinimumWidth(expand_w)
 
-        if expand_h > self.height():
+        if expand_h > self.height() and expand_h < self.maximumHeight():
             self.setMinimumHeight(expand_h)
 
         # Push the text content if there is an icon
@@ -220,10 +275,19 @@ class Button(QAbstractButton, Themeable):
         if not icon.isNull():
             text_padding = main_axis - diff
 
+            # Increase text padding if text is not center aligned so they don't touch each other
+            # TODO: Handle other alignments and better padding calculation
+            if self.__text_alignment & Qt.AlignmentFlag.AlignLeft:
+                text_padding += padding_w * 2
+
         pt.setPen(QPen(text_color))
         pt.drawText(QRectF(text_padding, 0, w - text_padding, h), self.__text_alignment, self.__text)
 
         if not icon.isNull():
+            # If there is no text content, center the icon
+            if len(self.__text) == 0:
+                padding_w = diff_h
+
             icon.paint(
                 pt,
                 padding_w, diff_h,

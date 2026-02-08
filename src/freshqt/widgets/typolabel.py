@@ -29,6 +29,8 @@ class TypoLabel(QLabel, Themeable):
 
         self.__type = type
 
+        self.__theme: Theme | None = None
+
     @property
     def type(self) -> TypographyType:
         """ Typography type of the label. """
@@ -37,8 +39,10 @@ class TypoLabel(QLabel, Themeable):
     @type.setter
     def type(self, value: TypographyType) -> None:
         self.__type = value
-        self.update_theme()
-        self.update_theme_role()
+        if self.__theme is not None:
+            self.update_theme(self.__theme)
+            self.update_theme_role(self.__theme)
+        self.update()
 
     def update_theme(self, theme: Theme, text_color: QColor | None = None) -> None:
         font_size = int(round(theme.get_typo_size(self.__type) * theme.font_scale))

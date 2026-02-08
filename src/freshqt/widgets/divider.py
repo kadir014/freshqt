@@ -29,11 +29,11 @@ class Divider(QAbstractButton, Themeable):
         if self.__orientation == Qt.Orientation.Horizontal:
             self.setSizePolicy(
                 QSizePolicy.Policy.Expanding,
-                QSizePolicy.Policy.Minimum
+                QSizePolicy.Policy.Fixed
             )
         else:
             self.setSizePolicy(
-                QSizePolicy.Policy.Minimum,
+                QSizePolicy.Policy.Fixed,
                 QSizePolicy.Policy.Expanding
             )
 

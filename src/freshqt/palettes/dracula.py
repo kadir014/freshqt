@@ -44,6 +44,7 @@ SYNTAX_DRACULA = SyntaxPalette(
 )
 
 UI_DRACULA = UIPalette(
+    name                 = "Dracula",
     is_dark              = True,
     background_primary   = DRACULA["background"],
     background_secondary = DRACULA["selection"],
@@ -90,6 +91,7 @@ SYNTAX_ALUCARD = SyntaxPalette(
 )
 
 UI_ALUCARD = UIPalette(
+    name                 = "Alucard",
     is_dark              = False,
     background_primary   = ALUCARD["background"],
     background_secondary = ALUCARD["selection"],

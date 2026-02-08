@@ -41,6 +41,7 @@ class Tween(QObject):
     """
 
     changed = pyqtSignal()
+    finished = pyqtSignal()
 
     def __init__(
             self,
@@ -103,6 +104,7 @@ class Tween(QObject):
     def stop(self) -> None:
         """ Stop playing the animation. """
         self.is_started = False
+        self.finished.emit()
 
     def update(self) -> None:
         """ Process animation logic. """
