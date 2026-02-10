@@ -33,6 +33,8 @@ class TypoLabel(QLabel, Themeable):
         self.__color0 = None
         self.__color = None
 
+        self.__font_weight = -1
+
         self.__theme: Theme | None = None
 
     @property
@@ -66,6 +68,14 @@ class TypoLabel(QLabel, Themeable):
         if font_size <= 0:
             font_size = 1
 
+        font_weight = 400
+        if self.__type in (TypographyType.SUBTITLE, TypographyType.TITLE3):
+            font_weight = 600
+        if self.__type in (TypographyType.TITLE2, TypographyType.TITLE1):
+            font_weight = 700
+        if self.__type == TypographyType.LARGE_TITLE:
+            font_weight = 900
+
         if self.__color0 is None:
             self.__color = theme.qcolor(theme.palette.text_primary)
 
@@ -81,5 +91,6 @@ class TypoLabel(QLabel, Themeable):
         self.setStyleSheet(f"""
             font-family: {theme.font_family};
             font-size: {font_size}px;
+            font-weight: {font_weight};
             color: {theme.qss(self.__color)};
         """)

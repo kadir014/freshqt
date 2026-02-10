@@ -252,7 +252,7 @@ class Button(QAbstractButton, Themeable):
 
         # Try to load regular icon, try icon manager if it fails
         icon = self.icon()
-        if icon.isNull():
+        if icon.isNull() and len(self.__icon_name) > 0:
             icon = self.__theme.icons.get(self.__icon_name, text_color)
 
         icon_size = self.iconSize()
