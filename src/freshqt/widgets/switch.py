@@ -62,13 +62,21 @@ class Switch(QWidget, Themeable):
 
         self.__on = value
 
-        if changed:
-            if self.__on:
-                self.__tween.play(0.15, reverse=True, easing=Easing.EASE_OUT_SINE)
-            else:
-                self.__tween.play(0.15, easing=Easing.EASE_OUT_SINE)
+        # TODO: animation doesn't play if widget is hidden
+        # if changed:
+        #     if self.__on:
+        #         self.__tween.play(0.15, reverse=True, easing=Easing.EASE_OUT_SINE)
+        #     else:
+        #         self.__tween.play(0.15, easing=Easing.EASE_OUT_SINE)
 
-            self.update()
+        #     self.update()
+
+        self.__tween.value = 1.0 * float(self.__on)
+        self.__tween.value_normalized = self.__tween.value
+        self.__tween._alpha = 1.0 # BU OLMAK ZORUNDA
+        self.update()
+
+        self.toggled.emit()
 
     def mousePressEvent(self, e) -> None:
         if self.__on:

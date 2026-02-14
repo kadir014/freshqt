@@ -33,8 +33,6 @@ class TypoLabel(QLabel, Themeable):
         self.__color0 = None
         self.__color = None
 
-        self.__font_weight = -1
-
         self.__theme: Theme | None = None
 
     @property

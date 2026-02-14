@@ -14,6 +14,7 @@ from PyQt6.QtCore import Qt, QRectF
 from PyQt6.QtWidgets import QWidget, QAbstractButton
 from PyQt6.QtGui import QPainter, QIcon, QColor, QPainterPath, QFont, QPen
 
+from freshqt.core.typing import ColorLike
 from freshqt.core.theme import Theme, Themeable
 from freshqt.core.models import TypographyType
 from freshqt.animation import Tween, Easing
@@ -63,6 +64,8 @@ class Button(QAbstractButton, Themeable):
         self.__type = type
         self.__icon_name = icon_name
         self.__variant = variant
+
+        self.__background_color: ColorLike | None = None
 
         self.__hover_tween = Tween(
             start_value=0.0,
@@ -152,6 +155,16 @@ class Button(QAbstractButton, Themeable):
         self.__variant = value
         self.update()
 
+    @property
+    def background_color(self) -> ColorLike | None:
+        """ Background color. Uses the variant background if None. """
+        return self.__background_color
+    
+    @background_color.setter
+    def background_color(self, value: ColorLike | None):
+        self.__background_color = value
+        self.update()
+
     def update_theme(self, theme: Theme) -> None:
         self.__theme = theme
         self.__mouse_effect_dark = not theme.palette.is_dark
@@ -215,6 +228,14 @@ class Button(QAbstractButton, Themeable):
             bg_color.setAlpha(0)
             text_color = self.__theme.qcolor(self.__theme.palette.text_primary)
             border_color = QColor(0, 0, 0, 0)
+
+        # If background option is given, use it instead of button variant
+        if self.__background_color is not None:
+            if isinstance(self.__background_color, str) and hasattr(self.__theme.palette, self.__background_color):
+                bg_color = self.__theme.qcolor(getattr(self.__theme.palette, self.background_color))
+
+            else:
+                bg_color = self.__theme.qcolor(self.__background_color)
 
         # Test for WCAG contrast ratio
         if WCAG(text_color, bg_color) < WCAG_NORMAL_TEXT:

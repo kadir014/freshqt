@@ -12,6 +12,7 @@ from freshqt.widgets.slider import Slider
 from freshqt.widgets.checkbox import CheckBox
 from freshqt.widgets.switch import Switch
 from freshqt.widgets.button import Button
+from freshqt.widgets.lineedit import LineEdit
 from freshqt.widgets.typolabel import TypoLabel
 from freshqt.widgets.kbdlabel import KbdLabel
 from freshqt.widgets.badgelabel import BadgeLabel
@@ -30,5 +31,6 @@ __all__ = (
     "Switch",
     "Button",
     "Divider",
-    "Avatar"
+    "Avatar",
+    "LineEdit"
 )

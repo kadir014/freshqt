@@ -317,6 +317,10 @@ class Code(QWidget, Themeable):
         self.update_theme(self.__theme)
         self.update()
 
+    def set_readonly(self, readonly: bool = True) -> None:
+        """ Set whether code editor is readonly or not. """
+        self.__editor.setReadOnly(True)
+
     def update_theme(self, theme: Theme) -> None:
         self.__theme = theme
 
