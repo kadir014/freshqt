@@ -317,6 +317,10 @@ class Button(QAbstractButton, Themeable):
             if self.__text_alignment & Qt.AlignmentFlag.AlignLeft:
                 text_padding += padding_w * 2
 
+        # TODO: Other alignmenst & proper content margins
+        if text_padding == 0 and self.text_alignment & Qt.AlignmentFlag.AlignLeft:
+            text_padding = padding_w
+
         pt.setPen(QPen(text_color))
         pt.drawText(QRectF(text_padding, 0, w - text_padding, h), self.__text_alignment, self.__text)
 

@@ -112,6 +112,13 @@ class Theme:
         self.__typo_ramp = typo_ramp
         self.update_widgets()
 
+    def update_widget(self, widget: QWidget) -> None:
+        """ Update single widget's style. """
+
+        widget.update_theme(self)
+        widget.update_theme_role(self)
+        widget.update()
+
     def update_widgets(self) -> None:
         """ Update all widgets' styles. """
 
@@ -140,12 +147,15 @@ class Theme:
         """
 
         self.__widgets.append(widget)
-        if update: self.update_widgets()
+        
+        if update:
+            self.update_widget(widget)
+            #self.update_widgets()
 
     def remove_widget(self,
             widget: "QWidget | Themeable",
             update: bool = True,
-            no_error: bool = False
+            no_error: bool = True
         ) -> None:
         """
         Remove a widget.
@@ -165,6 +175,31 @@ class Theme:
                 self.__widgets.remove(widget)
         else:
             self.__widgets.remove(widget)
+
+        if update:
+            self.update_widgets()
+
+    def remove_widgets_by_type(self, type_: type, update: bool = True) -> None:
+        """
+        Remove widgets by type.
+        
+        Parameters
+        ----------
+        type_
+            Instance type to check against
+        update
+            Update all widgets after removal is done
+        """
+
+        to_be_removed = []
+        for widget in self.__widgets:
+            if isinstance(widget, type_):
+                to_be_removed.append(widget)
+
+        for widget in to_be_removed:
+            self.remove_widget(widget, update=False)
+            if hasattr(widget, "theme_removed"):
+                widget.theme_removed()
 
         if update:
             self.update_widgets()
