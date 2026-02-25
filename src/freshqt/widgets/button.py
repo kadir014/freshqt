@@ -67,17 +67,7 @@ class Button(QAbstractButton, Themeable):
 
         self.__background_color: ColorLike | None = None
 
-        self.__hover_tween = Tween(
-            start_value=0.0,
-            end_value=1.0,
-            value=0.0
-        )
-
-        self.__press_tween = Tween(
-            start_value=0.0,
-            end_value=1.0,
-            value=0.0
-        )
+        self._reset_tween()
 
         self.__mouse_effect_dark = False
         self.__hover_percent = 0.1
@@ -91,6 +81,19 @@ class Button(QAbstractButton, Themeable):
         self.setMinimumSize(16, 16)
 
         self.__theme: Theme | None = None
+
+    def _reset_tween(self) -> None:
+        self.__hover_tween = Tween(
+            start_value=0.0,
+            end_value=1.0,
+            value=0.0
+        )
+
+        self.__press_tween = Tween(
+            start_value=0.0,
+            end_value=1.0,
+            value=0.0
+        )
 
     @property
     def text(self) -> str:
@@ -187,6 +190,16 @@ class Button(QAbstractButton, Themeable):
     def mouseReleaseEvent(self, e) -> None:
         super().mouseReleaseEvent(e)
         self.__press_tween.play(0.1, easing=Easing.EASE_IN_SINE, reverse=True)
+        self.update()
+
+    def showEvent(self, e) -> None:
+        super().showEvent(e)
+        self._reset_tween()
+        self.update()
+
+    def hideEvent(self, e) -> None:
+        super().hideEvent(e)
+        self._reset_tween()
         self.update()
 
     def update(self) -> None:
