@@ -28,6 +28,7 @@ class Theme:
 
     def __init__(self) -> None:
         self.__widgets: list["QWidget | Themeable"] = []
+        self.__recent_widgets: list["QWidget | Themeable"] = []
         self.__palette: UIPalette
         self.__typo_ramp: TypographyRamp
 
@@ -131,6 +132,22 @@ class Theme:
         for widget in self.__widgets:
             widget.update()
 
+        self.__recent_widgets.clear()
+
+    def update_last_widgets(self) -> None:
+        """ Update recently added widgets since last update. """
+
+        for widget in self.__recent_widgets:
+            widget.update_theme(self)
+
+        for widget in self.__recent_widgets:
+            widget.update_theme_role(self)
+        
+        for widget in self.__recent_widgets:
+            widget.update()
+
+        self.__recent_widgets.clear()
+
     def add_widget(self,
             widget: "QWidget | Themeable",
             update: bool = True
@@ -147,6 +164,7 @@ class Theme:
         """
 
         self.__widgets.append(widget)
+        self.__recent_widgets.append(widget)
         
         if update:
             self.update_widget(widget)
@@ -176,6 +194,9 @@ class Theme:
         else:
             self.__widgets.remove(widget)
 
+        if widget in self.__recent_widgets:
+            self.__recent_widgets.remove(widget)
+
         if update:
             self.update_widgets()
 
@@ -195,6 +216,9 @@ class Theme:
         for widget in self.__widgets:
             if isinstance(widget, type_):
                 to_be_removed.append(widget)
+
+                if widget in self.__recent_widgets:
+                    self.__recent_widgets.remove(widget)
 
         for widget in to_be_removed:
             self.remove_widget(widget, update=False)
