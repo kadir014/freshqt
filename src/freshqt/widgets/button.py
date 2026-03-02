@@ -210,6 +210,8 @@ class Button(QAbstractButton, Themeable):
     def paintEvent(self, e) -> None:
         if self.__theme is None: return
 
+        dpi = self.devicePixelRatioF()
+
         pt = QPainter(self)
         pt.setRenderHint(QPainter.RenderHint.Antialiasing, on=True)
 
@@ -342,10 +344,16 @@ class Button(QAbstractButton, Themeable):
             if len(self.__text) == 0:
                 padding_w = diff_h
 
+            icon_w = main_axis - diff
+            icon_h = main_axis - diff
+
+            icon_w = int(icon_w * dpi)
+            icon_h = int(icon_h * dpi)
+
             icon.paint(
                 pt,
                 padding_w, diff_h,
-                main_axis - diff, main_axis - diff,
+                icon_w, icon_h,
                 alignment=Qt.AlignmentFlag.AlignLeft
             )
 
