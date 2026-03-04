@@ -41,7 +41,11 @@ class Avatar(QWidget, Themeable):
 
     def __load_fallback_pixmap(self) -> None:
         w, h = self.width(), self.height()
-        self.__pixmap_fallback = QPixmap(str(IMAGES["avatar"].absolute()))
+
+        #self.__pixmap_fallback = QPixmap(str(IMAGES["avatar"].absolute()))
+        self.__pixmap_fallback = QPixmap(64, 64)
+        self.__pixmap_fallback.fill(QColor(255, 255, 255))
+
         self.__pixmap_fallback = self.__pixmap_fallback.scaled(
             w, h,
             transformMode=Qt.TransformationMode.SmoothTransformation
