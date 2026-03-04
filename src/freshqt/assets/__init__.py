@@ -35,9 +35,9 @@ def _collect_images() -> dict[str, Path]:
     return images
 
 
-HEROICONS = _collect_heroicons()
+HEROICONS = {}# _collect_heroicons()
 
-IMAGES = _collect_images()
+IMAGES = {}# _collect_images()
 
 
 __all__ = ("HEROICONS", "IMAGES")
